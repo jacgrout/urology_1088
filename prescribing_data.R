@@ -12,9 +12,13 @@ source("R/functions.R")
 
 
 #Add the codes of the drugs wanted
+#Incontinence
 drug_codes= c("0704020AC","0704020AA","0704020AD","0704020G0","0704020AE","0704020J0","0704020P0",
               "0704020AB","0704020AF","0704020N0","0704020Z0")
-drug_code = "0704020AF"
+
+#Retention
+drug_codes = c("0704010A0","0704010C0","0704010I0","0704010M0","0704010W0","0704010V0","0704010U0","0704010T0")
+
 #data_test <-get_drugs(drug_code)
 
 #call the function for each drug in the list but with a slight delay to avoid issues
@@ -42,4 +46,5 @@ for(i in 1:nrow(drug_data)){
   all_drugs <- bind_rows(all_drugs,df)
 }
 
-
+#incontinence_drugs <-all_drugs
+#retention_drugs <-all_drugs
