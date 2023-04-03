@@ -129,6 +129,25 @@ list_size_gpprac_prev_oab <- list_size_age_group_prev_oab |>
             list_size_oab_total = sum(list_size_oab)) |>
   ungroup()
 
-View(list_size_gpprac_prev_oab)
-View(list_size_gpprac_prev_bph)
+list_size_subicb_prev_bph <- list_size_age_group_prev_bph |>
+  group_by(sub_icb_location_code) |>
+  summarise(bphprevnumtotal = sum(bphprevnum),
+            list_size_bph_total = sum(list_size_bph)) |>
+  ungroup() |>
+  mutate(overall_prev = (bphprevnumtotal/list_size_bph_total)*100)
 
+list_size_subicb_prev_oab <- list_size_age_group_prev_oab |>
+  group_by(sub_icb_location_code) |>
+  summarise(oabprevnumtotal = sum(oabprevnum),
+            list_size_oab_total = sum(list_size_oab)) |>
+  ungroup() |>
+  mutate(overall_prev = (oabprevnumtotal/list_size_oab_total)*100)
+
+# Need to also calc by sub_icb
+#treatment to need ratios 
+
+#compare levels of condition specific treatment activity to the prevalence estimates
+#Where possible the analysis will consider both hospital surgical treatments (including inpatient, 
+#day case and outpatient treatments) using surgical procedure data as well as primary care management
+#using condition specific prescribing data. We will identify all relevant procedure codes and medications 
+#for inclusion and confirm these with the project’s clinical contacts.
