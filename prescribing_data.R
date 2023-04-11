@@ -19,6 +19,9 @@ drug_codes= c("0704020AC","0704020AA","0704020AD","0704020G0","0704020AE","07040
 #Retention
 drug_codes = c("0704010A0","0704010C0","0704010I0","0704010M0","0704010W0","0704010V0","0704010U0","0704010T0")
 
+#BPH
+drug_codes = c("0604020C0","0704010U0","0704010V0","0704010W0","0704020AF","0704010A0")
+
 #data_test <-get_drugs(drug_code)
 
 #call the function for each drug in the list but with a slight delay to avoid issues

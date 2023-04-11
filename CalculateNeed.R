@@ -143,9 +143,9 @@ list_size_subicb_prev_oab <- list_size_age_group_prev_oab |>
   ungroup() |>
   mutate(overall_prev = (oabprevnumtotal/list_size_oab_total)*100)
 
-# Need to also calc by sub_icb
-#treatment to need ratios 
+# Need to work out PPI prevalence as this will use activity as the denominator rather than population:
 
+#treatment to need ratios:
 #compare levels of condition specific treatment activity to the prevalence estimates
 #Where possible the analysis will consider both hospital surgical treatments (including inpatient, 
 #day case and outpatient treatments) using surgical procedure data as well as primary care management
