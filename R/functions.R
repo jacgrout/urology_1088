@@ -7,4 +7,3 @@ get_drugs <- function(id){
 }
 
 
-
