@@ -54,9 +54,15 @@ for(i in 1:19) {
  
  i=i+1
  
- print(plot)
+ p <- ggplotly(plot)
+ 
+ print(p)
 }
  
+
+
+
+
  
 
  
