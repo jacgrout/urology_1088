@@ -32,13 +32,14 @@ subicb_oab <- left_join (subicbshape,list_size_subicb_prev_oab,  by = "sub_icb_l
 subicb_bph <- left_join (subicbshape,list_size_subicb_prev_bph,  by = "sub_icb_location_code")
 
 #Maps of need
+
 tmap_options(check.and.fix = TRUE)
 tmap_mode("view")
 tm_shape(subicb_bph) +
-  tm_fill("overall_prev",title="Prevalence BPH",style = "pretty", palette = "YlOrRd") +
+  tm_fill("overall_prev",title="Prevalence BPH",style = "pretty", palette = "Blues") +
   tm_borders("grey25", alpha=.5) 
 
 tm_shape(subicb_oab) +
-  tm_fill("overall_prev",title="Prevalence OAB",style = "pretty", palette = "YlOrRd") +
+  tm_fill("overall_prev",title="Prevalence OAB",style = "pretty", palette = "Blues") +
   tm_borders("grey25", alpha=.5)
 

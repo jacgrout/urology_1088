@@ -8,11 +8,10 @@ midlands_gps <- ICBTOBPH |> filter(reg22nm == "Midlands")
 
 midlands_sub_icbs <- unique(midlands_gps$sub_icb_location_code)
 
-midlands_icbs <- unique(midlands_gps$icb22)
 
 i=1 
 
-for(i in 1:1) {
+for(i in 1:19) {
 
  bph_plot <- bph_activity_gp |>
    filter(sub_icb_location_code == midlands_sub_icbs[i]) |>
@@ -39,7 +38,6 @@ for(i in 1:1) {
  
 # bph_activity_gp_sub_icb <- bph_activity_midlands
  
- # NEED TO CALCULATE LIMITS FOR THE WHOLE OF THE MIDLANDS - NEED TO CHECK ABOUT EXCLUDED PRACTICES AND HOW TO HANDLE
  
  # Generate the limits for the plot
  lkup<-data.frame(id=seq(round(min(bph_activity_gp_sub_icb$bphprevnumtotal)), max(bph_activity_gp_sub_icb$bphprevnumtotal), 1))
@@ -58,8 +56,7 @@ for(i in 1:1) {
                                 key == "UpperTwoSigma" ~ "95% Upper CI")
           )
  
- plot <- bph_plot+ 
-   geom_line(aes(x=id, y=value, col=key), data=lkup, size = 1, linetype=5) + 
+ plot <- bph_plot+ geom_line(aes(x=id, y=value, col=key), data=lkup, size = 1) + 
    xlab("Prevalence Number") +
    ylab("Activity to Need Ratio")+
    labs(title = "Funnel plot for BPH data",
@@ -74,20 +71,21 @@ for(i in 1:1) {
  
 
 
-  
+
   
   i=1 
-  for(i in 1:19) {
+  for(i in 1:length(midlands_sub_icbs)) {
+ 
     activity_gp <- bph_activity_gp |> rename(prevnumtotal=bphprevnumtotal,
                                              num_spells=num_bph_spells)
     ICBTOCOND <- ICBTOBPH |> rename(prevnumtotal=bphprevnumtotal,
                        num_spells=num_bph_spells)
-    plot <- generate_funnel(activity_gp,midlands_sub_icbs[i],"Midlands",ICBTOBPH,"BPH")
+    plot <- generate_funnel(activity_gp,midlands_sub_icbs[i],"Midlands",ICBTOCOND,"BPH")
     print(plot)
     activity_gp <- oab_activity_gp |> rename(prevnumtotal=oabprevnumtotal,num_spells=num_oab_spells)
     ICBTOCOND <- ICBTOOAB |> rename(prevnumtotal=oabprevnumtotal,
                                     num_spells=num_oab_spells)
-    plot <- generate_funnel(activity_gp,midlands_sub_icbs[i],"Midlands",ICBTOOAB,"OAB")
+    plot <- generate_funnel(activity_gp,midlands_sub_icbs[i],"Midlands",ICBTOCOND,"OAB")
     i=i+1
     print(plot)
   }
