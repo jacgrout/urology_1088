@@ -56,16 +56,16 @@ list_size_age_group_compare_23all <- list_size_age_group_compare_23 |>
   filter(percentlistsizechange != "NA") |>
   mutate(roundedpercent = case_when (percentlistsizechange <0 ~ round(percentlistsizechange*-1),
                           TRUE ~  round(percentlistsizechange)),
-         group = case_when(roundedpercent<10 ~ '<10%',
-                           roundedpercent>=10 & roundedpercent <20 ~ '10-20%',
-                           roundedpercent>=20 & roundedpercent <30 ~ '20-30%',
-                           roundedpercent>=30 & roundedpercent <40 ~ '30-40%',
-                           roundedpercent>=40 & roundedpercent <50 ~ '40-50%',
-                           roundedpercent>=50 & roundedpercent <60 ~ '50-60%',
-                           roundedpercent>=60 & roundedpercent <70 ~ '60-70%',
-                           roundedpercent>=70 & roundedpercent <80 ~ '70-80%',
-                           roundedpercent>=80 & roundedpercent <90 ~ '80-90%',
-                           roundedpercent>=90 ~ '90%+',
+         group = case_when(roundedpercent<=10 ~ '<=10%',
+                           roundedpercent>10 & roundedpercent <=20 ~ '10-20%',
+                           roundedpercent>20 & roundedpercent <=30 ~ '20-30%',
+                           roundedpercent>30 & roundedpercent <=40 ~ '30-40%',
+                           roundedpercent>40 & roundedpercent <=50 ~ '40-50%',
+                           roundedpercent>50 & roundedpercent <=60 ~ '50-60%',
+                           roundedpercent>60 & roundedpercent <=70 ~ '60-70%',
+                           roundedpercent>70 & roundedpercent <=80 ~ '70-80%',
+                           roundedpercent>80 & roundedpercent <=90 ~ '80-90%',
+                           roundedpercent>90 ~ '>90%',
                            TRUE ~ 'Others'
          )) 
 

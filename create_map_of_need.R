@@ -3,7 +3,7 @@ library(tmap)
 library(dplyr)
 library(stringr)
 library(readxl)
-library(StrategyUnitTheme)
+#library(StrategyUnitTheme)
 
 #Get the ICB shape file
 subicbshape <- st_read(dsn ="Z:/Data/GIS files/Polygon Data/Sub_Integrated_Care_Board_Locations_(July_2022)_EN_BFC/SICBL_JUL_2022_EN_BFC.shp")

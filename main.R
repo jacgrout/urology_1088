@@ -15,18 +15,15 @@ source("calc_activity_need_ratio.R")
 
 source("ratio_map.R")
 
+source("originalfunnel.R")
 
-funnelplot
+source("calculate_activity_gap.R")
 
 
+#Sources: Strategy Unit analysis; SUS+, National Commisioning Data Repository 
 
 
 list_size_age_group_compare_23all
-
-ratio_map
-
-
-
 
 
 View(bph_activity_gp)
