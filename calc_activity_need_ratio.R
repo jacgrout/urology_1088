@@ -29,6 +29,12 @@ oab_spells <- read_csv("data/OABSpellsDistinctPatient.csv") |>
 #   group_by(org_code) |>
 #   summarise(num_bph_spells = sum(num)) |>
 #   ungroup()
+
+#read in PPI Spells
+ppi_spells <- read_csv("data/PPISpellsDistinctPatient.csv") |> 
+  clean_names() |>
+  rename(org_code = gp_practice_code,
+         num_ppi_spells = num)
   
   
   bph_joined <- list_size_gpprac_prev_bph |> 
@@ -38,6 +44,12 @@ oab_spells <- read_csv("data/OABSpellsDistinctPatient.csv") |>
   oab_joined <- list_size_gpprac_prev_oab |> 
     left_join (oab_spells) |>
     mutate(num_oab_spells = replace_na(num_oab_spells, 0))
+  
+  ppi_joined <- list_size_gpprac_prev_ppi |> 
+    left_join (ppi_spells) |>
+    mutate(num_ppi_spells = replace_na(num_ppi_spells, 0)) 
+  
+  ppi_joined <- ppi_joined |> filter(ppiprev != "NA")
   
   
   bph_activity <- bph_joined |>
@@ -54,14 +66,24 @@ oab_spells <- read_csv("data/OABSpellsDistinctPatient.csv") |>
               oab_spells = sum(num_oab_spells)) |>
     ungroup()
   
+  ppi_activity <- ppi_joined |>
+    group_by(sub_icb_location_code) |>
+    summarise(ppiprevsum = sum(ppiprev),
+              ppi_spells = sum(num_ppi_spells)) |>
+    ungroup()
+  
 ICBTOBPH <- bph_joined |> left_join(gp_to_icb)
 ICBTOOAB <- oab_joined |> left_join(gp_to_icb)
+ICBTOPPI <- ppi_joined |> left_join(gp_to_icb)
   
   bph_activity <- bph_activity |>
     mutate(activityneedratio = bph_spells/bphprev)
   
   oab_activity <- oab_activity |>
     mutate(activityneedratio = oab_spells/oabprev)
+  
+  ppi_activity <- ppi_activity |>
+    mutate(activityneedratio = ppi_spells/ppiprevsum)
   
 # -----------------------------------------------------------------------
   
@@ -79,6 +101,12 @@ ICBTOOAB <- oab_joined |> left_join(gp_to_icb)
     ) |>
     ungroup()
   
+  list_size_subicb_prev_ppi  <-  list_size_gpprac_prev_ppi |>
+    group_by(sub_icb_location_code) |>
+    summarise(ppiprevnumtotal = sum(ppiprev)
+    ) |>
+    ungroup()
+  
  # list_size_subicb_prev_bph <- list_size_subicb_prev_bph |> rename(sub_icb=sub_icb_location_code)
   
 
@@ -92,15 +120,23 @@ ICBTOOAB <- oab_joined |> left_join(gp_to_icb)
     summarise(num_oab_spells_sum = sum(num_oab_spells)) |>
     ungroup()
   
+  ppi_spells_icb <- ICBTOPPI |>
+    group_by(sub_icb_location_code) |>
+    summarise(num_ppi_spells_sum = sum(num_ppi_spells)) |>
+    ungroup()
+  
   bph_joined_icb <- list_size_subicb_prev_bph |> left_join (bph_spells_icb)
   oab_joined_icb <- list_size_subicb_prev_oab |> left_join (oab_spells_icb)
-
+  ppi_joined_icb <- list_size_subicb_prev_ppi |> left_join (ppi_spells_icb)
   
   bph_activity_icb <- bph_joined_icb |>
     mutate(activityneedratio = num_bph_spells_sum/bphprev)
   
   oab_activity_icb <- oab_joined_icb |>
     mutate(activityneedratio = num_oab_spells_sum/oabprev)
+  
+  ppi_activity_icb <- ppi_joined_icb |>
+    mutate(activityneedratio = num_ppi_spells_sum/ppiprevnumtotal)
   
   subicb_to_icb_lookup_2 <- subicb_to_icb_lookup |> rename(sub_icb=sub_icb_location_code)
 #bph_activity_icb <- bph_activity_icb |> left_join (subicb_to_icb_lookup)
@@ -115,11 +151,17 @@ ICBTOOAB <- oab_joined |> left_join(gp_to_icb)
   
   oab_plot
   
+  ppi_plot <- ggplot(ppi_activity_icb,aes(x=ppiprevnumtotal,y=activityneedratio,size=activityneedratio, colour=sub_icb_location_code)) +
+    geom_point()
+  
+  ppi_plot
+  
 
   #------------------------------------------------------------------------
   
   View(bph_joined)
   View(oab_joined)
+  View(ppi_joined)
   View(list_size_age_group_compare_23all)
 
   
@@ -140,8 +182,17 @@ ICBTOOAB <- oab_joined |> left_join(gp_to_icb)
   
   oab_activity_gp <- changed_list_size2 |>
     mutate(activityneedratio = num_oab_spells/oabprevnumtotal)
-    
   
+  changed_list_size <- ppi_joined |> left_join(list_size_age_group_compare_23all)
+  
+  changed_list_size2 <- changed_list_size |> 
+    #  filter(roundedpercent != "NA") |>
+    filter(roundedpercent<=20)
+  
+  ppi_activity_gp <- changed_list_size2 |>
+    mutate(activityneedratio = num_ppi_spells/ppiprevnumtotal)
+    
+  #--------------------------------------------------------------------------------------
   
   bph_plot <- bph_activity_gp |>
     filter(sub_icb_location_code =="01Y") |>

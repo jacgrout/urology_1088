@@ -86,10 +86,24 @@ prevpercent_male <- as.numeric(c('0','5.3','5.7','6.1','14.5','18.3','16.0'))
 prevpercent_female <- as.numeric(c('0','15.2','11','15.3','18.4','20.6','21.1'))
 prev_oab <- data.frame(age_group_oab,prevpercent_male,prevpercent_female)
 #ppi
-age_group_ppi <- c('<20','20-29','30-39','40-49','50-59','60-69','70+')
-prevpercent_male <- as.numeric(c('0','5.3','5.7','6.1','14.5','18.3','16.0'))
-prevpercent_female <- as.numeric(c('0','0','0','0','0','0','0'))
-prev_ppi <- data.frame(age_group_oab,prevpercent_male,prevpercent_female)
+# age_group_ppi <- c('<20','20-29','30-39','40-49','50-59','60-69','70+')
+# prevpercent_male <- as.numeric(c('0','5.3','5.7','6.1','14.5','18.3','16.0'))
+# prevpercent_female <- as.numeric(c('0','0','0','0','0','0','0'))
+# prev_ppi <- data.frame(age_group_ppi,prevpercent_male,prevpercent_female)
+# Need to work out PPI prevalence as this will use activity as the denominator rather than population:
+#get number of Prostatectomies performed in 5 year period 01/04/2012 to 31/03/2017 by gp practice
+
+prost_need_num_by_gp_prac <- read_csv("data/PPI5YearsDistinctPatients.csv") |> 
+  clean_names()
+
+ppi_prev_by_gp_prac  <- prost_need_num_by_gp_prac |>
+  mutate(prev = num*0.23)
+
+list_size_all_male <- select(gp_reg_pat_prac_sing_age_male, org_code,age,sex,number_of_patients,sub_icb_location_code) |>
+  filter(age == "ALL") 
+list_size_all_female <- select(gp_reg_pat_prac_sing_age_female, org_code,age,sex,number_of_patients,sub_icb_location_code) |>
+  filter(age == "ALL") 
+
 
 #join bph prev and calculate prev males
 list_size_age_group_prev_bph_male <- list_size_age_group_male_bph |>
@@ -112,8 +126,9 @@ list_size_age_group_prev_oab_female <- list_size_age_group_female_oab |>
 
 
 
-#combine male and female
+#combine male and female for by age for bph
 list_size_age_group_prev_bph <- rbind(list_size_age_group_prev_bph_male,list_size_age_group_prev_bph_female)
+
 
 list_size_gpprac_prev_bph <- list_size_age_group_prev_bph |> 
   group_by(org_code,sub_icb_location_code)|>
@@ -121,6 +136,7 @@ list_size_gpprac_prev_bph <- list_size_age_group_prev_bph |>
             list_size_bph_total = sum(list_size_bph)) |>
   ungroup()
 
+#combine male and female for by age for oab
 list_size_age_group_prev_oab <- rbind(list_size_age_group_prev_oab_male,list_size_age_group_prev_oab_female)
 
 list_size_gpprac_prev_oab <- list_size_age_group_prev_oab |> 
@@ -143,7 +159,32 @@ list_size_subicb_prev_oab <- list_size_age_group_prev_oab |>
   ungroup() |>
   mutate(overall_prev = (oabprevnumtotal/list_size_oab_total)*100)
 
-# Need to work out PPI prevalence as this will use activity as the denominator rather than population:
+#combine male and female for all ages for ppi
+list_size_all_group_prev_ppi <- rbind(list_size_all_male,list_size_all_female)
+
+#Join prevalence based on procedures to the gp prac list
+
+ppi_prev_by_gp_prac <- ppi_prev_by_gp_prac |> rename(org_code=gp_practice_code)
+
+list_size_all_group_prev_ppi <- list_size_all_group_prev_ppi |> 
+  group_by(org_code,sub_icb_location_code)|>
+  summarise(numtotal = sum(number_of_patients)) |>
+  ungroup()
+
+list_size_gpprac_prev_ppi <- list_size_all_group_prev_ppi |> left_join(ppi_prev_by_gp_prac) 
+
+list_size_gpprac_prev_ppi <- list_size_gpprac_prev_ppi |> 
+  rename(list_size_ppi_total = numtotal,
+         numtotal = num,
+         ppiprev = prev)
+
+
+list_size_subicb_prev_ppi <- list_size_gpprac_prev_ppi |>
+  filter(ppiprev != "NA") |>
+  group_by(sub_icb_location_code) |>
+  summarise(overall_prev = sum(ppiprev)) |>
+  ungroup() 
+
 
 #treatment to need ratios:
 #compare levels of condition specific treatment activity to the prevalence estimates
