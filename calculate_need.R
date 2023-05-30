@@ -174,13 +174,13 @@ list_size_all_group_prev_ppi <- list_size_all_group_prev_ppi |>
 list_size_gpprac_prev_ppi <- list_size_all_group_prev_ppi |> left_join(ppi_prev_by_gp_prac) 
 
 list_size_gpprac_prev_ppi <- list_size_gpprac_prev_ppi |> 
+  filter(prev != "NA") |>
   rename(list_size_ppi_total = numtotal,
          numtotal = num,
          ppiprev = prev)
 
 
 list_size_subicb_prev_ppi <- list_size_gpprac_prev_ppi |>
-  filter(ppiprev != "NA") |>
   group_by(sub_icb_location_code) |>
   summarise(overall_prev = sum(ppiprev)) |>
   ungroup() 
