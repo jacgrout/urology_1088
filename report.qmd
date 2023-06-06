@@ -3,67 +3,10 @@ title: "Urology"
 author: "Jacqueline Grout"
 echo: false
 warning: false
+message: false
 format: html
 editor: visual
 ---
-
-```{r}
-#| echo: false
-load(file = "data/projectimage.RData")
-source("R/functions.R")
-
-midlandsoutpatients <- readRDS("midlandsoutpatients.rds")
-```
-
-## Executive Summary
-
-Yet to be written ...
-
-### Key Findings
-
-hdfhdhdhdfhdhf
-
-### Implications/Recomendations
-
-dhdhfdhdfhdfhdfhfdhh
-
-## Introduction
-
-There are concerns that the provision of some urology services, particularly functional urology,  is not meeting the needs of patients adequately. This gap in provision could lead to delayed or prevented diagnosis and treatment resulting in poor quality of life and negative health outcomes for patients. The aim of this project is to produce a quantitative analysis to explore and quantify the underlying level of need in the Midlands for a selection of common functional urological conditions and using that to begin to quantify the scale of some of the gaps in Urology provision.
-
-## Methodology
-
-Prevalence studies from the literature for the selected conditions were considered with the aim to obtain detailed age and gender specific prevalence rate estimates.
-
-Insert each of the studies and references here...
-
-Benign Prostatic Hyperplasia:
-
-<https://www.nature.com/articles/s41598-017-06628-8>
-
-Overactive Bladder:
-
-<https://ginegap.com/materiales-cursos/bibliografia/m1-c1/52_Temml_2005.pdf>
-
-Post prostatectomy incontinence:
-
-<https://www.tandfonline.com/doi/full/10.1080/13685538.2017.1369944>
-
-This condition relates only to male patients, of whom 23% are incontinent after 12 months.
-
-For Benign Prostatic Hyperplasia (BPH) and Overactive Bladder the prevalence rates obtained from the literature were applied to the gp practice list sizes to obtain prevalence estimates for each practice and then ..
-
-These rates have been applied to GP list sizes to give an indication of the underlying level of need. The prevalence estimates were applied to GP practice populations and then aggregated to sub ICB and ICB level to provide quantifications of underlying need at both strategic and a more local/operational level.
-
-Treatment to need ratios have been calculated by directly comparing levels of condition specific treatment activity to the prevalence estimates.
-
-Where possible the analysis will consider both hospital surgical treatments (including inpatient, day case and outpatient treatments) using surgical procedure data as well as primary care management using condition specific prescribing data. We will identify all relevant procedure codes and medications for inclusion and confirm these with the project's clinical contacts
-
-### Inpatients
-
-#### Benign Prostatic Hyperplasia:
-
-##### Prevalence
 
 ```{r}
 #| echo: false
@@ -77,8 +20,129 @@ library(janitor)
 library(readr)
 library(tidyr)
 library(purrr)
+library(tidyverse)
+library(ggrepel)
 
+load(file = "data/projectimage.RData")
+source("R/functions.R")
 
+midlandsoutpatients <- readRDS("midlandsoutpatients.rds")
+```
+
+## Executive Summary
+
+Yet to be written ...
+
+### Key Findings
+
+Yet to be written ...
+
+### Implications/Recomendations
+
+Yet to be written ...
+
+## Introduction
+
+There are concerns that the provision of some urology services, particularly functional urology,  is not meeting the needs of patients adequately. This gap in provision could lead to delayed or prevented diagnosis and treatment resulting in poor quality of life and negative health outcomes for patients. The aim of this project is to produce a quantitative analysis to explore and quantify the underlying level of need in the Midlands for a selection of common functional urological conditions and using that to begin to quantify the scale of some of the gaps in Urology provision.
+
+## Methodology
+
+### Underlying need
+
+Prevalence studies from the literature for the selected conditions were considered with the aim to obtain detailed age and gender specific prevalence rate estimates.
+
+Benign Prostatic Hyperplasia:
+
+Prevalence rates were taken from, "The global burden of lower urinary tract symptoms suggestive of benign prostatic hyperplasia: A systematic review and meta-analysis" by Lee, Chan & Lai (2017).
+
+<https://www.nature.com/articles/s41598-017-06628-8>
+
+This article was chosen as it provided prevalence rates consistent with other literature, but included prevalence rates by age. This condition is only relevant to males.
+
+```{r}
+
+select(prev_bph, -prevpercent_female) |>
+  gt()|>
+  cols_label(age_group_bph = "Age Group",
+             prevpercent_male = "Prevalence (%)") |>
+  tab_header(
+    title = 'Benign Prostatic Hyperplasia (BPH) Prevalence'
+  ) |>
+  tab_source_note(source_note = "Source: Lee, Chan & Lai (2017)")
+```
+
+Overactive Bladder:
+
+Prevalence rates were taken from, "Prevalence of the Overactive Bladder Syndrome by Applying the International Continence Society Definition" by Temml, Heidler, Ponholzer and Madersbacher (2005).
+
+<https://ginegap.com/materiales-cursos/bibliografia/m1-c1/52_Temml_2005.pdf>
+
+This article was chosen as it provided prevalence rates consistent with other literature, used the International Continence Society (ICS) definitions, and included prevalence rates by both age and gender.
+
+```{r}
+prev_oab |>
+  gt()|>
+  cols_label(age_group_oab = "Age Group",
+             prevpercent_male = "Male Prevalence (%)",
+             prevpercent_female = "Female Prevalence (%)")|>
+  tab_header(
+    title = 'Overactive Bladder Prevalence'
+  ) |>
+  tab_source_note(source_note = "Source: Temml, Heidler, Ponholzer and Madersbacher (2005)")
+```
+
+Post prostatectomy incontinence:
+
+Prevalence rates were taken from, "Prevalence analysis of urinary incontinence after radical prostatectomy and influential preoperative factors in a single institution" by Robles, Hevia, Algarra, Diez-Cabellero and Pascual (2017).
+
+<https://www.tandfonline.com/doi/full/10.1080/13685538.2017.1369944>
+
+This article was chosen as it also used the ICS definitions. This condition relates only to male patients, of whom the article states that 23% remain incontinent 12 months after a prostatectomy.
+
+For both Benign Prostatic Hyperplasia (BPH) and Overactive Bladder the prevalence rates obtained from the literature were applied to the GP practice list sizes to obtain prevalence estimates for each practice, taking account of the gender and age profile of the practice.
+
+Applying the rates to the GP list sizes this gives an indication of the underlying level of need for each GP practice. The population need was then aggregated to generate need for each sub-ICB and each ICB with the intention of providing quantification of underlying need at both strategic and a more local/operational level.
+
+### Treatment to need ratios
+
+Treatment to need ratios have been calculated by directly comparing levels of condition specific treatment activity to the prevalence estimates. The ratios are activity divided by need.
+
+The analysis has considered hospital surgical treatments (including inpatient, day case and outpatient treatments) using surgical procedure data as well as primary care management using condition specific prescribing data.
+
+For the Benign Prostatic Hyperplasia and Overactive Bladder conditions the surgical procedure activity was a count by GP practice of the number of patients with at least one spell (Elective or Daycase) for a relevant procedure in the 5 year period (April 2018 to March 2023) with a Urology (101) treatment function code and a relevant diagnosis code (see appendix). Where a patient had more than one spell then the most recent spell was used to assign them to a GP practice.
+
+For the Post Prostatectomy Incontinence condition the surgical procedure activity was one of two definitions; 1) a count by GP practice of the number of patients in a 5-year period (April 2013 to March 2023), with at least one spell (Elective or Daycase) in which a procedure took place, with a Urology (101) treatment function code and a relevant diagnosis code (see appendix) in any position, who had previously (1 to 6 years prior, April 2012 to March 2017) had a spell in which they had a prostatectomy procedure; and 2) a count by GP practice of the number of patients in a 5-year period (April 2013 to March 2023), with at least one spell (Elective or Daycase) with a Urology (101) treatment function code and a relevant primary diagnosis code (see appendix), who had previously (1 to 6 years prior, April 2012 to March 2017) had a spell in which they had a prostatectomy procedure.
+
+Outpatient Data
+
+The Urology outpatient data rarely includes diagnosis codes (only 4% of attendances). Procedures that take place in outpatients are also not consistently recorded. Consequently it's not possible to give a robust picture of activity in relation to these specific conditions for use in calculating a treatment to need ratio. It is however possible to provide a description of the distribution of Urology outpatient activity across the Midlands region. Outpatient data was obtained from the SUS data as counts of outpatient attendances between April 2018 and March 2023 with a treatment function code of 101.
+
+Prescribing data
+
+Condition specific prescribing data was used as a proxy for / to reflect primary care management of the conditions. Prescribing data was obtained from *OpenPrescribing.net, Bennett Institute for Applied Data Science, University of Oxford, 2023*
+
+Built-in APIs were used from
+
+<https://openprescribing.net/>
+
+This is anoymised data about the drugs prescribed by GPs and drugs are organised and coded into relevant chapters. The detail of the drugs, codes and chapters used for each condition can be seen in the appendix.
+
+The activity was taken as a count of prescription items by sub-ICB over the most recent 5 year period available.
+
+### Analysis by GP practice
+
+During the five-year period of time of the activity data there have been changes in GP practices and their sizes, including closures, mergers etc. When reporting data at GP practice level, any practice with a list size that has changed by more than 20% over this 5 year period has been excluded from the reporting. The data has however been included in reporting at sub-ICB and ICB level.
+
+## FINDINGS:
+
+### Inpatients
+
+#### Benign Prostatic Hyperplasia:
+
+##### Prevalence
+
+```{r}
+#| echo: false
 
 #subicb_bph <- readRDS("subicb_bph.rds")
 
@@ -109,6 +173,140 @@ tm_shape(subicb_bph_ratio) +
           #col= "short_role",legend.show = T) +
   #tm_text("provider_code")
   tm_basemap(server = c('OpenStreetMap'))
+```
+
+Funnel plots
+
+```{r}
+#| output: asis
+
+data <-ICBTOBPH |>
+  filter(reg22nm =="Midlands") |>
+  mutate(activityneedratio = num_bph_spells / bphprevnumtotal)
+         
+ubar <- sum(data$num_bph_spells)/sum(data$bphprevnumtotal)
+
+
+#sub_icb <- midlands_sub_icbs[[i]]
+
+cl_fn <- function(ubar, limit) {
+  \(x) ubar + limit * sqrt(ubar / x)
+}
+
+
+plots <-midlands_sub_icbs |>
+  set_names() |>
+  map(\(sub_icb) {
+    ggplot(data, aes(bphprevnumtotal, activityneedratio)) +
+      geom_jitter(
+        data = \(.x) filter(.x, sub_icb_location_code == sub_icb),
+        fill = "#f9bf07",
+        colour = "black",
+        shape="circle filled"
+      ) +
+      # geom_jitter(
+      #   data = \(.x) {
+      #     .x |>
+      #       filter(sub_icb_location_code != sub_icb)
+      #   },
+      #   alpha = 0.1,
+      #   size = 0.5
+      #     ) +
+      geom_hline(aes(yintercept=ubar),size=1) +
+      geom_text_repel(
+        data = \(.x) {
+          .x |>
+            filter(
+              sub_icb_location_code == sub_icb,
+              FALSE |
+                activityneedratio > cl_fn(ubar, 3.0)(bphprevnumtotal) |
+                activityneedratio < cl_fn(ubar, -3.0)(bphprevnumtotal)
+            )
+        },
+        aes(label = org_code)
+      ) +
+      geom_function(fun = cl_fn(ubar, +1.96), size = 0.5, linetype=5) +
+      geom_function(fun = cl_fn(ubar, -1.96), size = 0.5, linetype=5) +
+      geom_function(fun = cl_fn(ubar, +3.00), size = 0.5, linetype="solid") +
+      geom_function(fun = cl_fn(ubar, -3.00), size = 0.5, linetype="solid") +
+      xlab("Prevalence Number") +
+      ylab("Activity to Need Ratio")+
+      ylim(-0.1, 0.1)+
+      labs(title = "Funnel plot for Benign Prostatic Hyperplasia", 
+           subtitle = paste0("Sub-ICB: ",sub_icb)) +
+      su_theme() 
+  })
+
+purrr::walk(plots, plot)
+```
+
+```{r}
+sub_icbs_mid <- select(ICBTOBPH,sub_icb_location_code, new_sub_icb_location_name, icb22, icb22nm) |>
+  filter(sub_icb_location_code %in% midlands_sub_icbs)|>
+  filter(icb22 != "NA")|>
+  unique()
+
+bph_activity_gap <- bph_activity |> 
+  filter(sub_icb_location_code %in% midlands_sub_icbs) |>
+  mutate(uq_activity_gap = (quantile(activityneedratio,prob=0.75,type=1)*bphprev)-bph_spells,
+         uq_gap_percentage_change = (uq_activity_gap/bph_spells)*100,
+         activity_gap = (max(activityneedratio)*bphprev)-bph_spells,
+         gap_percentage_change = (activity_gap/bph_spells)*100)|>
+  left_join(sub_icbs_mid) |>
+  select(new_sub_icb_location_name,bphprev,list_size_bph,bph_spells,activityneedratio,activity_gap,gap_percentage_change)
+#,uq_activity_gap, uq_gap_percentage_change
+
+bar_yields <- bph_activity_gap |> 
+  rowwise() |>
+  ungroup() |> 
+  mutate(
+    bar = gap_percentage_change,
+    color = col_pal(bar,"ggsci::blue_material"),
+    bar_chart = bar_chart(bar, color = color),
+    bar_chart = map(bar_chart, ~gt::html(as.character(.x)))
+  ) |>
+  select(-bar, -color)
+
+bph_activity_gap_table <- 
+  bar_yields |>
+  gt()|>
+  cols_width(c(bar_chart) ~ px(100),
+             c(bphprev) ~ px(50),
+             c(list_size_bph) ~ px(50),
+             c(bph_spells) ~ px(50),
+             c(activityneedratio) ~ px(50),
+             c(activity_gap) ~ px(50),
+             c(gap_percentage_change) ~ px(50)
+  ) %>% 
+  fmt_number(columns = 2:4,
+             decimals=0) |>
+  fmt_number(columns = 5:8,
+             decimals=2) |>
+  cols_label(
+    new_sub_icb_location_name=md("Sub-ICB"),
+    bphprev = md("Prevalence"),
+    list_size_bph = md("List Size"),
+    bph_spells = md("Spells"),
+    activityneedratio = md("Activity to Need ratio"),
+    activity_gap = md("Activity Gap"),
+    gap_percentage_change = md("% change"),
+    bar_chart = ""
+  ) |>
+  cols_align(
+    align = "right",
+    columns = 2:7
+  ) |>
+  cols_align(
+    align = "left",
+    columns = c(bar_chart)
+  ) |>
+  tab_header(
+    title = 'Benign Prostatic Hyperplasia Activity Gap - Midlands'
+  ) |>
+  tab_source_note(source_note = "Data: SUS??")
+
+bph_activity_gap_table
+
 ```
 
 #### Overactive Bladder:
@@ -142,6 +340,69 @@ tm_shape(subicb_oab_ratio) +
   tm_shape(oab_providers_sf) + 
   tm_dots(col = "short_role",size = 0.05)+
   tm_basemap(server = c('OpenStreetMap'))
+```
+
+Funnel Plots
+
+```{r}
+data <-ICBTOOAB |>
+  filter(reg22nm =="Midlands") |>
+  mutate(activityneedratio = num_oab_spells / oabprevnumtotal)
+         
+ubar <- sum(data$num_oab_spells)/sum(data$oabprevnumtotal)
+
+
+#sub_icb <- midlands_sub_icbs[[i]]
+
+cl_fn <- function(ubar, limit) {
+  \(x) ubar + limit * sqrt(ubar / x)
+}
+
+
+plots <-midlands_sub_icbs |>
+  set_names() |>
+  map(\(sub_icb) {
+    ggplot(data, aes(oabprevnumtotal, activityneedratio)) +
+      geom_jitter(
+        data = \(.x) filter(.x, sub_icb_location_code == sub_icb),
+        fill = "#f9bf07",
+        colour = "black",
+        shape="circle filled"
+      ) +
+      # geom_jitter(
+      #   data = \(.x) {
+      #     .x |>
+      #       filter(sub_icb_location_code != sub_icb)
+      #   },
+      #   alpha = 0.1,
+      #   size = 0.5
+      #     ) +
+      geom_hline(aes(yintercept=ubar),size=1) +
+      geom_text_repel(
+        data = \(.x) {
+          .x |>
+            filter(
+              sub_icb_location_code == sub_icb,
+              FALSE |
+                activityneedratio > cl_fn(ubar, 3.0)(oabprevnumtotal) |
+                activityneedratio < cl_fn(ubar, -3.0)(oabprevnumtotal)
+            )
+        },
+        aes(label = org_code)
+      ) +
+      geom_function(fun = cl_fn(ubar, +1.96), size = 0.5, linetype=5) +
+      geom_function(fun = cl_fn(ubar, -1.96), size = 0.5, linetype=5) +
+      geom_function(fun = cl_fn(ubar, +3.00), size = 0.5, linetype="solid") +
+      geom_function(fun = cl_fn(ubar, -3.00), size = 0.5, linetype="solid") +
+      xlab("Prevalence Number") +
+      ylab("Activity to Need Ratio")+
+      ylim(-0.05, 0.05)+
+      labs(title = "Funnel plot for Overactive Bladder", 
+           subtitle = paste0("Sub-ICB: ",sub_icb)) +
+      su_theme() 
+  })
+
+plots
 ```
 
 #### Post Prostatectomy Incontinence:
@@ -293,7 +554,7 @@ bar_yields <- midlandsoutpatientsicb %>%
   select(icb22nm, icb22, totalProcs, totalattends, attendperthousand) %>% 
   mutate(
     bar = round(attendperthousand/max(attendperthousand)*100, digits = 2),
-    color = col_pal(bar),
+    color = col_pal(bar,"ggsci::blue_material"),
     bar_chart = bar_chart(bar, color = color),
     bar_chart = map(bar_chart, ~gt::html(as.character(.x)))
     ) %>% 
@@ -363,14 +624,86 @@ Another
 
 ## Conclusion
 
-fsgsgsdggs
+(The medications are not particularly effective and when a patient is on multiple other medications its not necessarily a good idea to go on these drugs. Consultants say they want a patient on it but GP's then discuss with patient and when they learn of side effects etc then can decide not to (esp if elderly). Good treatment options are unfortunately limited.) - Matt
 
 ## Appendix
 
-### PPI:
+We will identify all relevant procedure codes and medications for inclusion and confirm these with the project's clinical contacts
 
-ICD10 Code: N39
+### Benign Prosta Hyperplasia:
 
-OPCS codes:
+Source of data SUS APCS
+
+Treatment Function Code: 101
+
+Admission date: 1/4/2018 and 31/3/2023
+
+Diagnosis codes: N40 or N32 in any diagnosis position
+
+Procedure codes: M36, M61, M62, M65, M67, M68, M71
+
+Elective and Day Case
 
 Medications:
+
+Tamsulosin hydrochloride              0704010U0         (7.4.1 drugs for urinary retention)
+
+Tamsulosin and dutasteride hydrochloride (0704010V0)   (7.4.1 drugs for urinary retention)
+
+Solifenacin/tamsulosin (0704010W0) (7.4.1 drugs for urinary retention) and (0704020AF) (7.4.2 Drugs for urinary frequency enuresis and incontinence) -- remove 742?
+
+Finasteride (0604020C0) (excludes baldness as in different chapter, this one is 6.4.2 Male sex hormones and antagonists)
+
+Alfuzosin hydrochloride (0704010A0) (7.4.1 drugs for urinary retention)
+
+Table by GP Practice of Activity to Need Ratios
+
+```{r}
+bph_gp_mid <- ICBTOBPH |>
+  filter(icb22 %in% midlands_icbs) |>
+  select(org_code, practice_name, bphprevnumtotal,list_size_bph_total, num_bph_spells,new_sub_icb_location_name, icb22nm) |>
+  mutate(anr = num_bph_spells/bphprevnumtotal) |>
+  gt(rowname_col = "icb22nm", "new_sub_icb_location_name") |>
+  tab_header(
+    title = 'BPH Activity To Need Ratio by GP practice'
+  ) |>
+  tab_source_note(source_note = "Data: SUS")
+
+bph_gp_mid
+
+# Need to flag / remove practices with >20% variation
+```
+
+### Overactive Bladder:
+
+ICD10 Code: N394 OPCS codes: M19, M24, M34 with X851, M36, M85, M86, A701 with Z112
+
+Medications:
+
+Duloxetine hydrochloride (0704020AA) (other codes are not incontinence)
+
+Solifenacin (0704020AB)  (742)
+
+Solifenacin/tamsulosin (0704010W0) (741) EXCLUDE?
+
+Oxybutynin (0704020J0) (742)
+
+Oxybutynin hydrochloride (0704040G0) (744 -- bladder instillations and urological surgery)
+
+Tolterodine (0704020N0) (742)
+
+Fesoterodine fumarate (0704020AD) (742)
+
+Darifenacin hydrobromide (0704020AC) (742)
+
+Mirabegron (0704020AE) (742)
+
+Desmopressin acetate (0605020E0) (6.5.2 Posterior pituitary hormones and antagonists)
+
+### Post Prostatectomy Incontinence:
+
+ICD10 Code:
+
+OPCS codes: M61, M65, M662, M683
+
+Medications: Oxybutynin, Tolterodine, Solifenacin, Mirabegron, Duloxetine
