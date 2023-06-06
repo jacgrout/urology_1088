@@ -37,7 +37,7 @@ Yet to be written ...
 
 Yet to be written ...
 
-### Implications/Recomendations
+### Implications/Recommendations
 
 Yet to be written ...
 
@@ -141,6 +141,8 @@ During the five-year period of time of the activity data there have been changes
 
 ##### Prevalence
 
+The prevalence for each sub-ICB was calculated by dividing the age and gender specific prevalence calculated for the sub-ICB and dividing this by the overall total list size for the respective sub-ICB. The highest overall prevalence rates are in Staffordshire and Stoke on Trent (05V) sub-ICB and Herefordshire and Worcestershire (18C) sub-ICB. Prevalence rates are the lowest in Leicester, Leicestershire and Rutland 04C
+
 ```{r}
 #| echo: false
 
@@ -152,6 +154,31 @@ tmap_mode("view")
 tm_shape(subicb_bph) +
   tm_fill("overall_prev",title="Prevalence BPH",style = "pretty", palette = "Blues") +
   tm_borders("grey25", alpha=.5) 
+```
+
+```{r}
+select(subicb_bph, SICBL22NM, bphprevnumtotal, list_size_bph_total, overall_prev) |>
+  st_drop_geometry() |>
+  arrange(SICBL22NM) |>
+  gt() |>
+    cols_label(
+    SICBL22NM = md("Sub-ICB"),
+    bphprevnumtotal = md("BPH number"),
+    list_size_bph_total = md("GP Practice List Size"),
+    overall_prev = md("Prevalence (%)")
+  ) |>
+  cols_align(
+    align = "right",
+    columns = 2:4
+  ) |>
+  fmt_number(columns = 2:3,
+             decimals=0) |> 
+  fmt_number(columns = 4:4,
+             decimals=2) |>
+tab_header(
+    title = 'Benign Prostatic Hyperplasia - Prevalence'
+  ) |>
+  tab_source_note(source_note = "Data: SUS & Patients Registered at a GP Practice (NHS Digital)")
 ```
 
 ##### Activity Need Ratio
@@ -178,7 +205,6 @@ tm_shape(subicb_bph_ratio) +
 Funnel plots
 
 ```{r}
-#| output: asis
 
 data <-ICBTOBPH |>
   filter(reg22nm =="Midlands") |>
@@ -311,6 +337,8 @@ bph_activity_gap_table
 
 #### Overactive Bladder:
 
+For the Overactive Bladder condition, the highest overall prevalence rates are in Staffordshire and Stoke on Trent (05G) sub-ICB and Lincolnshire (71E) sub-ICB. Prevalence rates are the lowest in Leicester, Leicestershire and Rutland 04C.
+
 ##### Prevalence
 
 ```{r}
@@ -322,6 +350,31 @@ bph_activity_gap_table
 tm_shape(subicb_oab) +
   tm_fill("overall_prev",title="Prevalence OAB",style = "pretty", palette = "Greens") +
   tm_borders("grey25", alpha=.5) 
+```
+
+```{r}
+select(subicb_oab, SICBL22NM, oabprevnumtotal, list_size_oab_total, overall_prev) |>
+  st_drop_geometry() |>
+  arrange(SICBL22NM) |>
+  gt() |>
+    cols_label(
+    SICBL22NM = md("Sub-ICB"),
+    oabprevnumtotal = md("OAB number"),
+    list_size_oab_total = md("GP Practice List Size"),
+    overall_prev = md("Prevalence (%)")
+  ) |>
+  cols_align(
+    align = "right",
+    columns = 2:4
+  ) |>
+  fmt_number(columns = 2:3,
+             decimals=0) |> 
+  fmt_number(columns = 4:4,
+             decimals=2) |>
+tab_header(
+    title = 'Overactive Bladder - Prevalence'
+  ) |>
+  tab_source_note(source_note = "Data: SUS & Patients Registered at a GP Practice (NHS Digital)")
 ```
 
 Where conditions relate to both male and female patients the results will be stratified by gender to inform an assessment of potential gender inequity in treatment access/provision.
@@ -402,21 +455,58 @@ plots <-midlands_sub_icbs |>
       su_theme() 
   })
 
-plots
+purrr::walk(plots, plot)
 ```
 
 #### Post Prostatectomy Incontinence:
 
 ##### Prevalence
 
+The post-prostatectomy incontinence prevalence for each sub-ICB was calculated differently to the other conditions, by dividing the age and gender specific prevalence calculated for the sub-ICB and dividing this by the overall total list size for the respective sub-ICB. The highest overall prevalence rates are in Nottingham and Nottinghamshire (02Q) sub-ICB and Herefordshire and Worcestershire (18C) sub-ICB. Prevalence rates are the lowest in Leicester, Leicestershire and Rutland (04C) sub-ICB.
+
 ```{r}
 #| echo: false
 
 #subicb_ppi <- readRDS("subicb_ppi.rds")
 
+# select(subicb_ppi, SICBL22CD, SICBL22NM, overall_prev) |>
+#   left_join(select(subicb_bph,SICBL22CD, list_size_bph_total)  |>
+#   mutate(prev = (overall_prev/list_size_bph_total)*1000) 
+
 tm_shape(subicb_ppi) +
   tm_fill("overall_prev",title="Prevalence PPI",style = "pretty", palette = "Reds") +
   tm_borders("grey25", alpha=.5)
+```
+
+```{r}
+select(subicb_ppi, SICBL22CD, SICBL22NM, overall_prev) |>
+  st_drop_geometry() |>
+  left_join(select(subicb_bph,SICBL22CD, list_size_bph_total)  |>
+            st_drop_geometry()
+            ) |>
+  mutate(prev = (overall_prev/list_size_bph_total)*1000) |>
+  arrange(SICBL22NM) |>
+  select(-SICBL22CD)|>
+  gt() |>
+  cols_label(
+    SICBL22NM = md("Sub-ICB"),
+    overall_prev = md("Prostatectomy Prevalence Estimate"),
+    list_size_bph_total = md("GP List Size"),
+    prev = md("Prevalence (per 1000 List Size)")
+  ) |>
+  cols_align(
+    align = "right",
+    columns = 2:4
+  ) |>
+  fmt_number(columns = 2:3,
+             decimals=0) |>
+  fmt_number(columns = 4:4,
+             decimals=2) |>
+  tab_header(
+    title = 'Post Prostatectomy Incontinence - Prevalence'
+  ) |>
+  tab_source_note(source_note = "Data: SUS & Patients Registered at a GP Practice (NHS Digital)")
+
 ```
 
 ##### Activity Need Ratio
@@ -434,6 +524,7 @@ tm_shape(subicb_ppi_ratio) +
   tm_shape(ppi_providers_sf) + 
   tm_dots(col = "short_role",size = 0.05)+
   tm_basemap(server = c('OpenStreetMap'))
+
 ```
 
 Funnel plots
@@ -495,7 +586,7 @@ plots <-midlands_sub_icbs |>
       su_theme() 
   })
 
-plots
+purrr::walk(plots, plot)
 ```
 
 ### Outpatients

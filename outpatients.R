@@ -33,7 +33,7 @@ midlandsoutpatients <- urologyoutpatientsall |>
   left_join(midlands_gps, by = join_by(gp_practice_code==org_code)) |>
   filter(reg22nm == "Midlands")
 
-#saveRDS(midlandsoutpatients,"midlandsoutpatients.rds")
+saveRDS(midlandsoutpatients,"midlandsoutpatients.rds")
 
 # get the number of urology outpatient attendances in the five years in the midlands:
 sum(midlandsoutpatients$numattends) # 2,304,785
