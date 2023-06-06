@@ -18,7 +18,7 @@ i=1
 for(i in 1:19) {
   
   bph_plot <- bph_activity_gp |>
-    filter(sub_icb_location_code ==midlands_sub_icbs[i]) |>
+    filter(sub_icb_location_code ==midlands_sub_icbs[i]) |> # review later
     mutate(mean_anr = mean(activityneedratio),
            median_anr = median(activityneedratio),
            ubar = sum(num_bph_spells)/sum(bphprevnumtotal)) |>
@@ -41,7 +41,7 @@ for(i in 1:19) {
   # bph_activity_gp_sub_icb <- bph_activity_midlands
   
 
-  # Generate the limits for the plot for the whole ofthe midlands
+  # Generate the limits for the plot for the whole of the midlands
   lkup<-data.frame(id=seq(round(min(bph_activity_midlands$bphprevnumtotal)), max(bph_activity_midlands$bphprevnumtotal), 1))
   
   #lkup<-data.frame(id=seq(round(min(bph_activity_gp_sub_icb$bphprevnumtotal)), max(bph_activity_gp_sub_icb$bphprevnumtotal), 1))

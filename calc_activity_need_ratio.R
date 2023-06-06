@@ -159,10 +159,10 @@ ICBTOPPI <- ppi_joined |> left_join(gp_to_icb)
 
   #------------------------------------------------------------------------
   
-  View(bph_joined)
-  View(oab_joined)
-  View(ppi_joined)
-  View(list_size_age_group_compare_23all)
+  # View(bph_joined)
+  # View(oab_joined)
+  # View(ppi_joined)
+  # View(list_size_age_group_compare_23all)
 
   
   changed_list_size <- bph_joined |> left_join(list_size_age_group_compare_23all)
@@ -190,7 +190,7 @@ ICBTOPPI <- ppi_joined |> left_join(gp_to_icb)
     filter(roundedpercent<=20)
   
   ppi_activity_gp <- changed_list_size2 |>
-    mutate(activityneedratio = num_ppi_spells/ppiprevnumtotal)
+    mutate(activityneedratio = num_ppi_spells/ppiprev)
     
   #--------------------------------------------------------------------------------------
   

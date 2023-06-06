@@ -3,3 +3,8 @@
 .RData
 .Ruserdata
 /secret
+*.RDS
+*.rds
+*.html
+report_files
+test_files

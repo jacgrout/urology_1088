@@ -17,7 +17,15 @@ source("ratio_map.R")
 
 source("originalfunnel.R")
 
+source("originalfunnel_oab.R")
+
+source("new_funnel_plot_ppi.R")
+
 source("calculate_activity_gap.R")
+
+source("outpatients.R")
+
+save.image(file = "data/projectimage.RData")
 
 
 #Sources: Strategy Unit analysis; SUS+, National Commisioning Data Repository 
