@@ -616,9 +616,40 @@ gt(rowname_col = "der_financial_year")|>
     
 ```
 
-The Urology outpatient data rarely includes diagnosis codes (only 4% of attendances). Procedures that take place in outpatients are also not consistently recorded. Consequently it's not possible to give a robust picture of activity in relation to these conditions. Below can be seen ...
+The Urology outpatient data rarely includes diagnosis codes (only 4% of attendances). Procedures that take place in outpatients are also not consistently recorded. Consequently it's not possible to give a robust picture of activity in relation to these conditions. Below can be seen that high is sub-ICB 71E. Low sub_ICB 04C.
 
-Maybe need to put the above data per 1000 list size pop for the ICB?
+```{r}
+subicblistsize <- ICBTOBPH |>
+  group_by(sub_icb_location_code) |>
+  summarise(sub_icb_list_size=sum(list_size_bph_total))|>
+  filter(sub_icb_location_code %in% midlands_sub_icbs) |>
+  ungroup()
+
+midlandsoutpatientssubicb <-
+  midlandsoutpatients |>
+  filter(der_appointment_type != "N/A") |>
+  group_by(sub_icb_location_code,der_appointment_type) |>
+  summarise(totalProcs = sum(der_number_procedure),
+            totalattends = sum(numattends)) |>
+  ungroup()
+
+midlandsoutpatientssubicb <- midlandsoutpatientssubicb |>
+  left_join(subicblistsize) |>
+  mutate(attendperthousand = (totalattends/sub_icb_list_size)*1000,
+         procsperthousand = (totalProcs/sub_icb_list_size)*1000)
+
+
+midlands_new_op_attends <- midlandsoutpatientssubicb |>
+  filter(der_appointment_type == "New") |>
+  left_join(subicbshape)
+  
+  
+  tm_shape(st_sf(midlands_new_op_attends)) +
+  tm_fill("attendperthousand",title="Attends per 1000",style = "pretty", palette = "-viridis") +
+    tm_layout(title = "Urology New Outpatient Attendances per 1000 List Size") +
+  tm_borders("grey25", alpha=.5) +
+  tm_basemap(server = c('OpenStreetMap'))
+```
 
 ```{r}
 
@@ -751,7 +782,7 @@ Finasteride (0604020C0) (excludes baldness as in different chapter, this one is 
 
 Alfuzosin hydrochloride (0704010A0) (7.4.1 drugs for urinary retention)
 
-Table by GP Practice of Activity to Need Ratios
+Table by GP Practice of Activity to Need Ratios for BPH
 
 ```{r}
 bph_gp_mid <- ICBTOBPH |>
@@ -759,12 +790,50 @@ bph_gp_mid <- ICBTOBPH |>
   select(org_code, practice_name, bphprevnumtotal,list_size_bph_total, num_bph_spells,new_sub_icb_location_name, icb22nm) |>
   mutate(anr = num_bph_spells/bphprevnumtotal) |>
   gt(rowname_col = "icb22nm", "new_sub_icb_location_name") |>
+    cols_label(
+    org_code = md("GP Pracice Code"),
+    practice_name = md("GP Practice Name"),
+    bphprevnumtotal = md("Prevalence"),
+    list_size_bph_total = md("List Size"),
+    num_bph_spells = md("Spells"),
+    anr = md("Activity To Need Ratio")
+  ) |> 
+    fmt_number(columns = 3:5,
+             decimals=0) |> 
   tab_header(
     title = 'BPH Activity To Need Ratio by GP practice'
   ) |>
   tab_source_note(source_note = "Data: SUS")
 
 bph_gp_mid
+
+# Need to flag / remove practices with >20% variation
+```
+
+Table by GP Practice of Activity to Need Ratios for Overactive Bladder
+
+```{r}
+oab_gp_mid <- ICBTOOAB |>
+  filter(icb22 %in% midlands_icbs) |>
+  select(org_code, practice_name, oabprevnumtotal,list_size_oab_total, num_oab_spells,new_sub_icb_location_name, icb22nm) |>
+  mutate(anr = num_oab_spells/oabprevnumtotal) |>
+  gt(rowname_col = "icb22nm", "new_sub_icb_location_name") |>
+    cols_label(
+    org_code = md("GP Pracice Code"),
+    practice_name = md("GP Practice Name"),
+    oabprevnumtotal = md("Prevalence"),
+    list_size_oab_total = md("List Size"),
+    num_oab_spells = md("Spells"),
+    anr = md("Activity To Need Ratio")
+  ) |> 
+      fmt_number(columns = 3:5,
+             decimals=0) |> 
+  tab_header(
+    title = 'OAB Activity To Need Ratio by GP practice'
+  ) |>
+  tab_source_note(source_note = "Data: SUS")
+
+oab_gp_mid
 
 # Need to flag / remove practices with >20% variation
 ```
