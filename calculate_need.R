@@ -171,7 +171,7 @@ list_size_all_group_prev_ppi <- list_size_all_group_prev_ppi |>
   summarise(numtotal = sum(number_of_patients)) |>
   ungroup()
 
-list_size_gpprac_prev_ppi <- list_size_all_group_prev_ppi |> left_join(ppi_prev_by_gp_prac) 
+list_size_gpprac_prev_ppi <- list_size_all_group_prev_ppi |> left_join(ppi_prev_by_gp_prac) #HERE IS THE JOIN***
 
 list_size_gpprac_prev_ppi <- list_size_gpprac_prev_ppi |> 
   filter(prev != "NA") |>
@@ -182,9 +182,10 @@ list_size_gpprac_prev_ppi <- list_size_gpprac_prev_ppi |>
 
 list_size_subicb_prev_ppi <- list_size_gpprac_prev_ppi |>
   group_by(sub_icb_location_code) |>
-  summarise(overall_prev = sum(ppiprev)) |>
+  summarise(list_size_ppi = sum(list_size_ppi_total),
+            overall_num = sum(numtotal),
+            overall_prev = sum(ppiprev)) |>
   ungroup() 
-
 
 #treatment to need ratios:
 #compare levels of condition specific treatment activity to the prevalence estimates

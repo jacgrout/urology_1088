@@ -183,6 +183,8 @@ tab_header(
 
 ##### Activity Need Ratio
 
+The BPH activity to need ratios indicate that Nottingham and Nottinghamshire (02Q) sub-ICB and Herefordshire and Worcestershire (18C) sub-ICB have the highest level of activity relative to the underlying need. The lowest level of activity relative to the underlying need is in Leicester, Leicestershire and Rutland 04C sub-ICB and Staffordshire and Stoke-on-Trent (05W) sub-ICB.
+
 ```{r}
 #| echo: false
 library(StrategyUnitTheme)
@@ -196,8 +198,9 @@ tm_shape(subicb_bph_ratio) +
  # tm_shape(bph_providers_sf) + 
 #  tm_bubbles(size="num",labels="name") + 
   tm_shape(bph_providers_sf) + 
-  tm_dots(col = "grey", size = 0.05,legend.show = T)+
-          #col= "short_role",legend.show = T) +
+  tm_dots(
+          #col = "grey", size = 0.05,legend.show = T)+
+          col= "short_role",size = 0.05, title = "Providers") +
   #tm_text("provider_code")
   tm_basemap(server = c('OpenStreetMap'))
 ```
@@ -381,6 +384,8 @@ Where conditions relate to both male and female patients the results will be str
 
 ##### Activity Need Ratio
 
+The overactive bladder activity to need ratios indicate that Nottingham and Nottinghamshire (02Q) sub-ICB and Leicester, Leicestershire and Rutland (03W) sub-ICB have the highest level of activity relative to the underlying need. The lowest level of activity relative to the underlying level of need is in Leicester, Leicestershire and Rutland (04C) sub-ICB and Birmingham and Solihull (15E) sub-ICB.
+
 ```{r}
 #| echo: false
 
@@ -391,7 +396,7 @@ tm_shape(subicb_oab_ratio) +
   tm_fill("activityneedratio",title="Activity/Need Ratio OAB",style = "pretty", palette = "-viridis") +
   tm_borders("grey25", alpha=.5) +
   tm_shape(oab_providers_sf) + 
-  tm_dots(col = "short_role",size = 0.05)+
+  tm_dots(col = "short_role",size = 0.05, title = "Providers")+
   tm_basemap(server = c('OpenStreetMap'))
 ```
 
@@ -449,7 +454,7 @@ plots <-midlands_sub_icbs |>
       geom_function(fun = cl_fn(ubar, -3.00), size = 0.5, linetype="solid") +
       xlab("Prevalence Number") +
       ylab("Activity to Need Ratio")+
-      ylim(-0.05, 0.05)+
+      ylim(-0.025, 0.025)+
       labs(title = "Funnel plot for Overactive Bladder", 
            subtitle = paste0("Sub-ICB: ",sub_icb)) +
       su_theme() 
@@ -462,37 +467,32 @@ purrr::walk(plots, plot)
 
 ##### Prevalence
 
-The post-prostatectomy incontinence prevalence for each sub-ICB was calculated differently to the other conditions, by dividing the age and gender specific prevalence calculated for the sub-ICB and dividing this by the overall total list size for the respective sub-ICB. The highest overall prevalence rates are in Nottingham and Nottinghamshire (02Q) sub-ICB and Herefordshire and Worcestershire (18C) sub-ICB. Prevalence rates are the lowest in Leicester, Leicestershire and Rutland (04C) sub-ICB.
+The post-prostatectomy incontinence prevalence for each sub-ICB was calculated differently to the other conditions, by dividing the age and gender specific prevalence calculated for the sub-ICB and dividing this by the overall total list size for the respective sub-ICB. The highest overall prevalence rates are in Herefordshire and Worcestershire (18C) sub-ICB and Nottingham and Nottinghamshire (02Q) sub-ICB. Prevalence rates are the lowest in Leicester, Leicestershire and Rutland (04C) sub-ICB.
 
 ```{r}
 #| echo: false
 
 #subicb_ppi <- readRDS("subicb_ppi.rds")
 
-# select(subicb_ppi, SICBL22CD, SICBL22NM, overall_prev) |>
-#   left_join(select(subicb_bph,SICBL22CD, list_size_bph_total)  |>
-#   mutate(prev = (overall_prev/list_size_bph_total)*1000) 
+ subicb_ppi <- subicb_ppi |>
+   mutate(prev_per_list_size = (overall_prev/list_size_ppi)*1000) 
 
 tm_shape(subicb_ppi) +
-  tm_fill("overall_prev",title="Prevalence PPI",style = "pretty", palette = "Reds") +
+  tm_fill("prev_per_list_size",title="Prevalence PPI per 1000",style = "pretty", palette = "Reds") +
   tm_borders("grey25", alpha=.5)
 ```
 
 ```{r}
-select(subicb_ppi, SICBL22CD, SICBL22NM, overall_prev) |>
+select(subicb_ppi,SICBL22CD,SICBL22NM,overall_prev,list_size_ppi,prev_per_list_size)|>
   st_drop_geometry() |>
-  left_join(select(subicb_bph,SICBL22CD, list_size_bph_total)  |>
-            st_drop_geometry()
-            ) |>
-  mutate(prev = (overall_prev/list_size_bph_total)*1000) |>
   arrange(SICBL22NM) |>
   select(-SICBL22CD)|>
   gt() |>
   cols_label(
     SICBL22NM = md("Sub-ICB"),
     overall_prev = md("Prostatectomy Prevalence Estimate"),
-    list_size_bph_total = md("GP List Size"),
-    prev = md("Prevalence (per 1000 List Size)")
+    list_size_ppi = md("GP List Size"),
+    prev_per_list_size = md("Prevalence (per 1000 List Size)")
   ) |>
   cols_align(
     align = "right",
@@ -511,6 +511,8 @@ select(subicb_ppi, SICBL22CD, SICBL22NM, overall_prev) |>
 
 ##### Activity Need Ratio
 
+The post prostatectomy incontinence activity to need ratios indicate that Staffordshire and Stoke-on-Trent (05V) sub-ICB and Nottingham and Nottinghamshire (02Q) sub-ICB have the highest level of activity relative to the underlying need. The lowest level of activity is in Staffordshire and Stoke-on-Trent (05G) sub-ICB and Lincolnshire (71E) sub-ICB.
+
 ```{r}
 #| echo: false
 
@@ -522,12 +524,14 @@ tm_shape(subicb_ppi_ratio) +
   tm_fill("activityneedratio",title="Activity/Need Ratio PPI",style = "pretty", palette = "-viridis") +
   tm_borders("grey25", alpha=.5) +
   tm_shape(ppi_providers_sf) + 
-  tm_dots(col = "short_role",size = 0.05)+
+  tm_dots(col = "short_role",size = 0.05, title = "Providers")+
   tm_basemap(server = c('OpenStreetMap'))
 
 ```
 
 Funnel plots
+
+The sub-ICB plots below show the activity to need ratios for each GP practice plotted according to the underlying need for the condition and with confidence intervals for the whole of the Midlands region. GP practices that are outside the limits for the Midlands region are labelled. Within the two sub-ICBs with the highest activity to need ratios all GP practices are within the confidence limits.
 
 ```{r}
 data <-ICBTOPPI |>

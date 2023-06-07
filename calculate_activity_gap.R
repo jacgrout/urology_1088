@@ -1,4 +1,10 @@
+midlands_gps <- ICBTOBPH |> filter(reg22nm == "Midlands") 
 
+midlands_sub_icbs <- unique(midlands_gps$sub_icb_location_code)
+
+midlands_icbs <- unique(midlands_gps$icb22)
+
+bph_activity_gp <- left_join(bph_activity_gp, select(ICBTOBPH,icb22,icb22nm,org_code), by =  "org_code")
 
 
 bph_activity_gap <- bph_activity |> 
