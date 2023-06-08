@@ -23,6 +23,7 @@ source("ratio_map.R")
 
 source("calculate_activity_gap.R")
 
+source("prescribing_data.R")
 
 save.image(file = "data/projectimage.RData")
 
@@ -30,7 +31,3 @@ source("outpatients.R")
 #Sources: Strategy Unit analysis; SUS+, National Commisioning Data Repository 
 
 
-list_size_age_group_compare_23all
-
-
-View(bph_activity_gp)
