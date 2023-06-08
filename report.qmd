@@ -618,6 +618,8 @@ gt(rowname_col = "der_financial_year")|>
 
 The Urology outpatient data rarely includes diagnosis codes (only 4% of attendances). Procedures that take place in outpatients are also not consistently recorded. Consequently it's not possible to give a robust picture of activity in relation to these conditions. Below can be seen that high is sub-ICB 71E. Low sub_ICB 04C.
 
+#### Urology New Outpatient Attendances per 1000 List Size
+
 ```{r}
 subicblistsize <- ICBTOBPH |>
   group_by(sub_icb_location_code) |>
@@ -646,7 +648,7 @@ midlands_new_op_attends <- midlandsoutpatientssubicb |>
   
   tm_shape(st_sf(midlands_new_op_attends)) +
   tm_fill("attendperthousand",title="Attends per 1000",style = "pretty", palette = "-viridis") +
-    tm_layout(title = "Urology New Outpatient Attendances per 1000 List Size") +
+  #  tm_layout(title = "Urology New Outpatient Attendances per 1000 List Size") +
   tm_borders("grey25", alpha=.5) +
   tm_basemap(server = c('OpenStreetMap'))
 ```
