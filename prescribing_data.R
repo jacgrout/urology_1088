@@ -15,18 +15,18 @@ library(forcats)
 
 #Add the codes of the drugs wanted
 #Incontinence
-drug_codes= c("0704020AC","0704020AA","0704020AD","0704020G0","0704020AE","0704020J0","0704020P0",
-              "0704020AB","0704020AF","0704020N0","0704020Z0")
+#drug_codes= c("0704020AC","0704020AA","0704020AD","0704020G0","0704020AE","0704020J0","0704020P0",
+  #            "0704020AB","0704020AF","0704020N0","0704020Z0")
 
 #Retention
-drug_codes = c("0704010A0","0704010C0","0704010I0","0704010M0","0704010W0","0704010V0","0704010U0","0704010T0")
+#drug_codes = c("0704010A0","0704010C0","0704010I0","0704010M0","0704010W0","0704010V0","0704010U0","0704010T0")
 
 #BPH
-drug_codes = c("0604020C0","0704010U0","0704010V0","0704010W0","0704010A0")
+bph_drug_codes = c("0604020C0","0704010U0","0704010V0","0704010W0","0704010A0")
 # 0604020C0 and 0704010U0 -  most used
 
 #OAB
-drug_codes = c("0704020AA","0704020AB","0704020J0","0704040G0","0704020N0","0704020AD","0704020AC","0704020AE","0605020E0")
+oab_drug_codes = c("0704020AA","0704020AB","0704020J0","0704040G0","0704020N0","0704020AD","0704020AC","0704020AE","0605020E0")
 # 0704020AB and 0704020AE and 0704020J0 and 0704020N0 -  most used
 
 #data_test <-get_drugs(drug_code)
@@ -36,6 +36,12 @@ f <- purrr::slowly(
   purrr::safely(get_drugs),
   rate = purrr::rate_delay(0.1)
 )
+
+#----------------------------------------------------------------------------
+#BPH
+
+drug_codes <- bph_drug_codes
+
 
 #format the results from the function call
 drug_data <-drug_codes |>
@@ -73,51 +79,45 @@ bph_activity_icb_drugs <-bph_activity_icb |>
   left_join(bph_drugs_summary,by = join_by(sub_icb_location_code==row_id)) |>
   mutate(presc_anr = items_total/bphprev)
 
-
-  
-  bph_plot <- bph_activity_icb_drugs |>
-    filter(sub_icb_location_code %in% midlands_sub_icbs) |>
-    mutate(mean_anr = mean(presc_anr),
-           median_anr = median(presc_anr),
-           ubar = sum(items_total)/sum(bphprev)) |>
-    ggplot(aes(x=bphprev,y=presc_anr))+
-    geom_point(size=3,colour = "#f9bf07") +
-    geom_point(size=3,colour = "black",shape=21) +
-    geom_hline(aes(yintercept=ubar),size=1) +
-    su_theme()
-  
-  bph_plot
+bph_activity_icb_drugs_mid <- bph_activity_icb_drugs |>
+  filter(sub_icb_location_code %in% midlands_sub_icbs)
 
 
+#-----------------------------------------------------------------------------
+
+#OAB
+drug_codes <- oab_drug_codes
+
+#format the results from the function call
+drug_data <-drug_codes |>
+  set_names() |>
+  purrr::map(f) |> #run up to here to check for errors, maybe remove the pipe
+  map("result") |>
+  discard(is.null) |>
+  enframe("id","results")
+
+#first_drug <-drug_data$results[[1]]
+
+#create an empty tibble to put all the results in
+all_drugs <- tibble()
+
+#loop over and bind together all the data retrieved for each drug in the list
+for(i in 1:nrow(drug_data)){
+  df <- drug_data$results[[i]]
+  all_drugs <- bind_rows(all_drugs,df)
+}
 
 
-#incontinence_drugs <-all_drugs
-#retention_drugs <-all_drugs
+oab_drugs_summary <- all_drugs |>
+  group_by(row_id)|>
+  summarise(items_total = sum(items)) |>
+  ungroup()
 
-oab_drugs <- all_drugs |> 
-  mutate(year=substr(date,1,4),
-         finyear=case_when(date<='2019-03-31' ~ '2018/19',
-                           date>='2019-04-01' & date <= '2020-03-31' ~ '2019/20', 
-                           date>='2020-04-01' & date <= '2021-03-31' ~ '2020/21', 
-                           date>='2021-04-01' & date <= '2022-03-31' ~ '2021/22',
-                           date>='2022-04-01' & date <= '2023-03-31' ~ '2022/23',
-                           TRUE ~ 'xx/xx')
-)
+oab_activity_icb_drugs <-oab_activity_icb |> 
+  left_join(oab_drugs_summary,by = join_by(sub_icb_location_code==row_id)) |>
+  mutate(presc_anr = items_total/oabprev)
 
-bphplot <- all_drugs_summary |> filter(row_id %in% midlands_sub_icbs) |>
-ggplot(aes(x=row_id, y=items_total,fill=drug)) + 
-  geom_col() +
-  ggtitle("Prescription Items for OAB Medications (Last 5 years)")+
-  xlab("Sub-ICB")+
-  ylab("Total Prescribed Items")+
-  scale_fill_su(palette="reds") +
-  su_theme()
-
-
-bph_plot <- ggplot(bph_drugs,aes(x=finyear,y=items,size=items, colour=drug)) 
-bph_plot + geom_point() + facet_grid(drug~.)
-
-oab_plot <- ggplot(oab_drugs,aes(x=finyear,y=items,size=items, colour=drug)) 
-oab_plot + geom_point() + facet_grid(drug~.)
+oab_activity_icb_drugs_mid <- oab_activity_icb_drugs |>
+  filter(sub_icb_location_code %in% midlands_sub_icbs)
 
 
