@@ -6,6 +6,14 @@ get_drugs <- function(id){
   data
 }
 
+get_drugs_by_gp <- function(id,gp){
+req = GET(paste0("https://openprescribing.net/api/1.0/spending_by_practice/?code=",id,"&org=",gp,"&format=json"))
+data = fromJSON(rawToChar(req$content)) |>
+  mutate(drug = id)
+data
+}
+
+
 
 # get_drugs <- function(id){
 # 

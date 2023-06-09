@@ -918,7 +918,7 @@ bph_activity_icb_drugs_mid |>
     tab_header(
     title = 'BPH Prescription Items Activity To Need Ratio by Sub_ICB'
   ) |>
-  tab_source_note(source_note = "Data: openprescribing.net")
+  tab_source_note(source_note = "Source: OpenPrescribing.net, Bennett Institute for Applied Data Science, University of Oxford, 2023")
 ```
 
 OAB
@@ -938,7 +938,7 @@ oab_activity_icb_drugs_mid |>
     tab_header(
     title = 'OAB Prescription Items Activity To Need Ratio by Sub_ICB'
   ) |>
-  tab_source_note(source_note = "Data: openprescribing.net")
+  tab_source_note(source_note = "Source: OpenPrescribing.net, Bennett Institute for Applied Data Science, University of Oxford, 2023")
 ```
 
 ## Conclusion
