@@ -208,6 +208,7 @@ Funnel plots
 
 ```{r}
 
+
 data <-ICBTOBPH |>
   filter(reg22nm =="Midlands") |>
   mutate(activityneedratio = num_bph_spells / bphprevnumtotal)
