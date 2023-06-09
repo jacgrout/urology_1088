@@ -1,6 +1,7 @@
 
 source("functions.R")
 
+source("R/functions.R")
 
 # Calculate the need
 source("calculate_need.R")
@@ -25,9 +26,11 @@ source("calculate_activity_gap.R")
 
 source("prescribing_data.R")
 
+source("outpatients.R")
+
 save.image(file = "data/projectimage.RData")
 
-source("outpatients.R")
+
 #Sources: Strategy Unit analysis; SUS+, National Commisioning Data Repository 
 
 

@@ -1,3 +1,5 @@
+library(purrr)
+
 midlands_gps <- ICBTOBPH |> filter(reg22nm == "Midlands") 
 
 midlands_sub_icbs <- unique(midlands_gps$sub_icb_location_code)
@@ -20,7 +22,7 @@ ppi_activity_gap <- ppi_activity |>
          gap_percentage_change = (activity_gap/ppi_spells)*100)
 
 
-bph_activity$activityneedratio
+#bph_activity$activityneedratio
 
 # ------
 
@@ -65,55 +67,55 @@ bar_yields <- bph_activity_gap |>
   ) |>
   select(-bar, -color,-bar2, -color2,-uq_gap_percentage_change_neg,-uq_gap_percentage_change_pos)
 
-bph_activity_gap_table <- 
-  bar_yields |>
-  gt()|>
-  cols_width(c(bar_chart) ~ px(100),
-             c(bar_chart2) ~ px(100),
-             c(bphprev) ~ px(50),
-             c(list_size_bph) ~ px(50),
-             c(bph_spells) ~ px(50),
-             c(activityneedratio) ~ px(50),
-             c(activity_gap) ~ px(50),
-             c(gap_percentage_change) ~ px(50),
-             c(uq_gap_percentage_change) ~ px(50)
-             # ,
-             # c(uq_gap_percentage_change_neg) ~ px(50),
-             # c(uq_gap_percentage_change_pos) ~ px(50)
-  ) %>% 
-  fmt_number(columns = 2:4,
-             decimals=0) |>
-  fmt_number(columns = 5:8,
-             decimals=2) |>
-  cols_label(
-    new_sub_icb_location_name=md("Sub-ICB"),
-    bphprev = md("Prevalence"),
-    list_size_bph = md("List Size"),
-    bph_spells = md("Spells"),
-    activityneedratio = md("Activity to Need ratio"),
-    activity_gap = md("Activity Gap"),
-    gap_percentage_change = md("% change"),
-    uq_gap_percentage_change = md("UQ % change"),
-    # uq_gap_percentage_change_neg = md("UQ % change neg"),
-    # uq_gap_percentage_change_pos = md("UQ % change pos"),
-    bar_chart2 = "",
-    bar_chart = ""
-  ) |>
-  cols_align(
-    align = "right",
-    columns = 2:8
-  ) |>
-  cols_align(
-    align = "left",
-    columns = c(bar_chart)
-  ) |>
-  cols_align(
-    align = "right",
-    columns = c(bar_chart2)
-  ) |>
-  tab_header(
-    title = 'Benign Prostatic Hyperplasia Activity Gap - Midlands'
-  ) |>
-  tab_source_note(source_note = "Data: SUS??")
-
-bph_activity_gap_table
+# bph_activity_gap_table <- 
+#   bar_yields |>
+#   gt()|>
+#   cols_width(c(bar_chart) ~ px(100),
+#              c(bar_chart2) ~ px(100),
+#              c(bphprev) ~ px(50),
+#              c(list_size_bph) ~ px(50),
+#              c(bph_spells) ~ px(50),
+#              c(activityneedratio) ~ px(50),
+#              c(activity_gap) ~ px(50),
+#              c(gap_percentage_change) ~ px(50),
+#              c(uq_gap_percentage_change) ~ px(50)
+#              # ,
+#              # c(uq_gap_percentage_change_neg) ~ px(50),
+#              # c(uq_gap_percentage_change_pos) ~ px(50)
+#   ) %>% 
+#   fmt_number(columns = 2:4,
+#              decimals=0) |>
+#   fmt_number(columns = 5:8,
+#              decimals=2) |>
+#   cols_label(
+#     new_sub_icb_location_name=md("Sub-ICB"),
+#     bphprev = md("Prevalence"),
+#     list_size_bph = md("List Size"),
+#     bph_spells = md("Spells"),
+#     activityneedratio = md("Activity to Need ratio"),
+#     activity_gap = md("Activity Gap"),
+#     gap_percentage_change = md("% change"),
+#     uq_gap_percentage_change = md("UQ % change"),
+#     # uq_gap_percentage_change_neg = md("UQ % change neg"),
+#     # uq_gap_percentage_change_pos = md("UQ % change pos"),
+#     bar_chart2 = "",
+#     bar_chart = ""
+#   ) |>
+#   cols_align(
+#     align = "right",
+#     columns = 2:8
+#   ) |>
+#   cols_align(
+#     align = "left",
+#     columns = c(bar_chart)
+#   ) |>
+#   cols_align(
+#     align = "right",
+#     columns = c(bar_chart2)
+#   ) |>
+#   tab_header(
+#     title = 'Benign Prostatic Hyperplasia Activity Gap - Midlands'
+#   ) |>
+#   tab_source_note(source_note = "Data: SUS??")
+# 
+# bph_activity_gap_table
