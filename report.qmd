@@ -385,7 +385,9 @@ tab_header(
   tab_source_note(source_note = "Data: SUS & Patients Registered at a GP Practice (NHS Digital)")
 ```
 
-Where conditions relate to both male and female patients the results will be stratified by gender to inform an assessment of potential gender inequity in treatment access/provision.
+```{r}
+#Where conditions relate to both male and female patients the results will be #stratified by gender to inform an assessment of potential gender inequity in #treatment access/provision.
+```
 
 ##### Activity to Need Ratio
 
@@ -764,7 +766,7 @@ gt(rowname_col = "der_financial_year")|>
     
 ```
 
-The Urology outpatient data rarely includes diagnosis codes (only 4% of attendances). Procedures that take place in outpatients are also not consistently recorded. Consequently it's not possible to give a robust picture of activity in relation to these conditions. In the map and table below, it can be seen that over a five year peiod (April 2018 to March 2023), the ICB with the largest volume of Urology outpatient new attendances is Lincolnshire (71E) ICB with 99.61 per 1000 list size population and Leicester City (04C) has the lowest with 30.09 per 1000 list size population.
+The Urology outpatient data rarely includes diagnosis codes (only 4% of attendances). Procedures that take place in outpatients are also not consistently recorded. Consequently it's not possible to give a robust picture of activity in relation to these conditions. In the map and table below, it can be seen that over a five year peiod (April 2018 to March 2023), the ICB with the largest volume of Urology outpatient new attendances is Lincolnshire (71E) ICB with 99.61 per 1000 list size population and Leicester City (04C) sub-ICB has the lowest with 30.09 per 1000 list size population.
 
 ##### Urology New Outpatient Attendances per 1000 List Size
 
@@ -949,6 +951,94 @@ oab_activity_icb_drugs_mid |>
 
 We will identify all relevant procedure codes and medications for inclusion and confirm these with the project's clinical contacts
 
+Table by GP Practice of Inpatient Activity to Need Ratios
+
+```{r}
+#| column: screen
+
+bph_gp <- ICBTOBPH |>
+  filter(icb22 %in% midlands_icbs) |>
+  select(org_code, practice_name, bphprevnumtotal,list_size_bph_total, num_bph_spells,new_sub_icb_location_name, icb22nm) |>
+  mutate(anr = num_bph_spells/bphprevnumtotal)
+
+oab_gp <- ICBTOOAB |>
+  filter(icb22 %in% midlands_icbs) |>
+  select(org_code, practice_name, oabprevnumtotal,list_size_oab_total, num_oab_spells,new_sub_icb_location_name, icb22nm) |>
+  mutate(anr = num_oab_spells/oabprevnumtotal)
+
+
+ppi_gp <- ICBTOPPI |>
+  filter(icb22 %in% midlands_icbs) |>
+  select(org_code, practice_name, ppiprev,list_size_ppi_total, num_ppi_spells,new_sub_icb_location_name, icb22nm) |>
+  mutate(anr = num_ppi_spells/ppiprev)
+
+gp_all <- bph_gp |>
+  rename(bph_anr = anr) |>
+  left_join(select(oab_gp, org_code, oabprevnumtotal, list_size_oab_total, num_oab_spells, anr)) |>
+  rename(oab_anr = anr) |>
+  left_join(select(ppi_gp, org_code, ppiprev, list_size_ppi_total, num_ppi_spells, anr)) |>
+  rename(ppi_anr = anr)
+
+
+  gp_all_table <- select(gp_all, new_sub_icb_location_name,org_code, practice_name, list_size_bph_total, bphprevnumtotal, num_bph_spells, 
+                       bph_anr, oabprevnumtotal, num_oab_spells,oab_anr, ppiprev, num_ppi_spells, ppi_anr) |>  
+  gt(groupname_col = "new_sub_icb_location_name") |>
+  cols_label(
+    org_code = md("GP Pracice Code"),
+    practice_name = md("GP Practice Name"),
+    list_size_bph_total = md("List Size"),
+    bphprevnumtotal = md("Prevalence"),
+    num_bph_spells = md("Spells"),
+    bph_anr = md("BPH Activity To Need Ratio"),
+    oabprevnumtotal = md("Prevalence"),
+    num_oab_spells = md("Spells"),
+    oab_anr = md("OAB Activity To Need Ratio"),
+    ppiprev = md("Prevalence"),
+    num_ppi_spells = md("Spells"),
+    ppi_anr = md("PPI Activity To Need Ratio")
+  ) |> 
+  tab_spanner(
+    label = "Benign Prostatectic Hyperplasia", 
+    columns = 5:7
+  ) |>
+  tab_spanner(
+    label = "Overactive Bladder", 
+    columns = 8:10
+  ) |>
+  tab_spanner(
+    label = "Post Prostatectomy Incontinence", 
+    columns = 11:13
+  ) |>
+  fmt_number(columns = 5:5,
+             decimals=2) |>
+  # fmt_number(columns = 5:6,
+  #            decimals=0) |>
+  fmt_number(columns = 7:7,
+             decimals=3) |>
+  fmt_number(columns = 8:8,
+             decimals=2) |>
+  # fmt_number(columns = 9:10,
+  #            decimals=0) |> 
+  fmt_number(columns = 10:10,
+             decimals=3) |>
+  # fmt_number(columns = 12:12,
+  #            decimals=0) |> 
+   fmt_number(columns = 13:13,
+            decimals=3) |> 
+      tab_style(
+    style = cell_text(color = "black", weight = "bold"),
+    locations = list(
+      cells_column_labels(everything())
+    )
+  ) |>
+  tab_header(
+    title = 'Activity To Need Ratio by GP practice'
+  ) |>
+  tab_source_note(source_note = "Data: SUS & Patients Registered at a GP Practice (NHS Digital)")
+
+gp_all_table
+```
+
 ### Benign Prosta Hyperplasia:
 
 Source of data SUS APCS
@@ -965,72 +1055,15 @@ Elective and Day Case
 
 Medications:
 
-Tamsulosin hydrochloride              0704010U0         (7.4.1 drugs for urinary retention)
+Tamsulosin hydrochloride (0704010U0) (7.4.1 drugs for urinary retention)
 
-Tamsulosin and dutasteride hydrochloride (0704010V0)   (7.4.1 drugs for urinary retention)
+Tamsulosin and dutasteride hydrochloride (0704010V0) (7.4.1 drugs for urinary retention)
 
 Solifenacin/tamsulosin (0704010W0) (7.4.1 drugs for urinary retention) and (0704020AF) (7.4.2 Drugs for urinary frequency enuresis and incontinence) -- remove 742?
 
 Finasteride (0604020C0) (excludes baldness as in different chapter, this one is 6.4.2 Male sex hormones and antagonists)
 
 Alfuzosin hydrochloride (0704010A0) (7.4.1 drugs for urinary retention)
-
-Table by GP Practice of Activity to Need Ratios for BPH
-
-```{r}
-bph_gp_mid <- ICBTOBPH |>
-  filter(icb22 %in% midlands_icbs) |>
-  select(org_code, practice_name, bphprevnumtotal,list_size_bph_total, num_bph_spells,new_sub_icb_location_name, icb22nm) |>
-  mutate(anr = num_bph_spells/bphprevnumtotal) |>
-  gt(rowname_col = "icb22nm","new_sub_icb_location_name") |>
-  
-    cols_label(
-    org_code = md("GP Pracice Code"),
-    practice_name = md("GP Practice Name"),
-    bphprevnumtotal = md("Prevalence"),
-    list_size_bph_total = md("List Size"),
-    num_bph_spells = md("Spells"),
-    anr = md("Activity To Need Ratio")
-  ) |> 
-    fmt_number(columns = 3:5,
-             decimals=0) |> 
-  tab_header(
-    title = 'BPH Activity To Need Ratio by GP practice'
-  ) |>
-  tab_source_note(source_note = "Data: SUS & Patients Registered at a GP Practice (NHS Digital)")
-
-bph_gp_mid
-
-# Need to flag / remove practices with >20% variation
-```
-
-Table by GP Practice of Activity to Need Ratios for Overactive Bladder
-
-```{r}
-oab_gp_mid <- ICBTOOAB |>
-  filter(icb22 %in% midlands_icbs) |>
-  select(org_code, practice_name, oabprevnumtotal,list_size_oab_total, num_oab_spells,new_sub_icb_location_name, icb22nm) |>
-  mutate(anr = num_oab_spells/oabprevnumtotal) |>
-  gt(rowname_col = "icb22nm", "new_sub_icb_location_name") |>
-    cols_label(
-    org_code = md("GP Pracice Code"),
-    practice_name = md("GP Practice Name"),
-    oabprevnumtotal = md("Prevalence"),
-    list_size_oab_total = md("List Size"),
-    num_oab_spells = md("Spells"),
-    anr = md("Activity To Need Ratio")
-  ) |> 
-      fmt_number(columns = 3:5,
-             decimals=0) |> 
-  tab_header(
-    title = 'OAB Activity To Need Ratio by GP practice'
-  ) |>
-  tab_source_note(source_note = "Data: SUS & Patients Registered at a GP Practice (NHS Digital)")
-
-oab_gp_mid
-
-# Need to flag / remove practices with >20% variation
-```
 
 ### Overactive Bladder:
 
@@ -1064,4 +1097,14 @@ ICD10 Code:
 
 OPCS codes: M61, M65, M662, M683
 
-Medications: Oxybutynin, Tolterodine, Solifenacin, Mirabegron, Duloxetine
+Medications:
+
+Oxybutynin
+
+Tolterodine
+
+Solifenacin
+
+Mirabegron
+
+Duloxetine

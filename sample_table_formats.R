@@ -35,7 +35,7 @@ p
 ## 3  3   B1  25,000    10%    no
 ## 4  4   B2  18,300    15%    no
 ## 5  5   C1   7,600    15%   yes
-
+library(formattable)
 df <- data.frame(
   id = 1:10,
   name = c("Bob", "Ashley", "James", "David", "Jenny",
