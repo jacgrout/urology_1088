@@ -472,7 +472,7 @@ purrr::walk(plots, plot)
 
 ##### Activity Gap
 
-As with Benign Prostatetic Hyperplasia there is an activity gap for Overactive Bladder and in order to attempt to quantify this activity gap, the activity to need ratio for the sub-ICB with the highest ratio has been applied to all other sub-ICBs and an estimated number of inpatient spells calculated as well as the % increase in activity that this represents. The table below shows that Leicester City (04C) sub-ICB would need a 163% increase in activity to increase its activity to need ratio to the same as Bassetlaw (02Q) sub-ICB.
+As with Benign Prostatic Hyperplasia there is an activity gap for Overactive Bladder and in order to attempt to quantify this activity gap, the activity to need ratio for the sub-ICB with the highest ratio has been applied to all other sub-ICBs and an estimated number of inpatient spells calculated as well as the % increase in activity that this represents. The table below shows that Leicester City (04C) sub-ICB would need a 163% increase in activity to increase its activity to need ratio to the same as Bassetlaw (02Q) sub-ICB.
 
 ```{r}
 sub_icbs_mid <- select(ICBTOOAB,sub_icb_location_code, new_sub_icb_location_name, icb22, icb22nm) |>
@@ -903,7 +903,7 @@ rule10_bar
 
 ### Prescribing
 
-BPH
+Benign Prostatic Hyperplasia
 
 ```{r}
 bph_activity_icb_drugs_mid |>
@@ -918,12 +918,12 @@ bph_activity_icb_drugs_mid |>
     presc_anr = md("Activity to Need Ratio")
   ) |>
     tab_header(
-    title = 'BPH Prescription Items Activity To Need Ratio by Sub_ICB'
+    title = 'Prescription Items Activity To Need Ratio by Sub_ICB'
   ) |>
   tab_source_note(source_note = "Source: OpenPrescribing.net, Bennett Institute for Applied Data Science, University of Oxford, 2023")
 ```
 
-OAB
+Overactive Bladder
 
 ```{r}
 oab_activity_icb_drugs_mid |>
@@ -938,18 +938,20 @@ oab_activity_icb_drugs_mid |>
     presc_anr = md("Activity to Need Ratio")
   ) |>
     tab_header(
-    title = 'OAB Prescription Items Activity To Need Ratio by Sub_ICB'
+    title = 'Prescription Items Activity To Need Ratio by Sub_ICB'
   ) |>
   tab_source_note(source_note = "Source: OpenPrescribing.net, Bennett Institute for Applied Data Science, University of Oxford, 2023")
 ```
 
 ## Conclusion
 
-(The medications are not particularly effective and when a patient is on multiple other medications its not necessarily a good idea to go on these drugs. Consultants say they want a patient on it but GP's then discuss with patient and when they learn of side effects etc then can decide not to (esp if elderly). Good treatment options are unfortunately limited.) - Matt
+TBC
+
+```{r}
+#(The medications are not particularly effective and when a patient is on multiple #other medications its not necessarily a good idea to go on these drugs. #Consultants say they want a patient on a it but GP's then discuss with patient and #when they learn of side effects etc then can decide not to (esp if elderly). Good #treatment options are unfortunately limited.) - Matt
+```
 
 ## Appendix
-
-We will identify all relevant procedure codes and medications for inclusion and confirm these with the project's clinical contacts
 
 Table by GP Practice of Inpatient Activity to Need Ratios
 
@@ -989,16 +991,16 @@ gp_all <- bph_gp |>
     list_size_bph_total = md("List Size"),
     bphprevnumtotal = md("Prevalence"),
     num_bph_spells = md("Spells"),
-    bph_anr = md("BPH Activity To Need Ratio"),
+    bph_anr = md("Activity To Need Ratio"),
     oabprevnumtotal = md("Prevalence"),
     num_oab_spells = md("Spells"),
-    oab_anr = md("OAB Activity To Need Ratio"),
+    oab_anr = md("Activity To Need Ratio"),
     ppiprev = md("Prevalence"),
     num_ppi_spells = md("Spells"),
-    ppi_anr = md("PPI Activity To Need Ratio")
+    ppi_anr = md("Activity To Need Ratio")
   ) |> 
   tab_spanner(
-    label = "Benign Prostatectic Hyperplasia", 
+    label = "Benign Prostatic Hyperplasia", 
     columns = 5:7
   ) |>
   tab_spanner(
@@ -1031,6 +1033,7 @@ gp_all <- bph_gp |>
       cells_column_labels(everything())
     )
   ) |>
+    tab_options(table.width = pct(80)) |>
   tab_header(
     title = 'Activity To Need Ratio by GP practice'
   ) |>
@@ -1039,7 +1042,9 @@ gp_all <- bph_gp |>
 gp_all_table
 ```
 
-### Benign Prosta Hyperplasia:
+Below are details of all relevant procedure codes and medications:
+
+### Benign Prostatic Hyperplasia:
 
 Source of data SUS APCS
 
