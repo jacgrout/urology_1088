@@ -917,10 +917,32 @@ bph_activity_icb_drugs_mid |>
     items_total = md("Items"),
     presc_anr = md("Activity to Need Ratio")
   ) |>
+  fmt_number(columns = 2:2,
+             decimals=2) |>
+  fmt_number(columns = 7:7,
+             decimals=2) |>
     tab_header(
     title = 'Prescription Items Activity To Need Ratio by Sub_ICB'
   ) |>
   tab_source_note(source_note = "Source: OpenPrescribing.net, Bennett Institute for Applied Data Science, University of Oxford, 2023")
+```
+
+```{r}
+#| echo: false
+
+#subicb_bph_ratio <- readRDS("subicb_bph_ratio.rds")
+#bph_providers_sf <- readRDS("bph_providers_sf.rds")
+
+subicb_bph_ratio_drugs_mid <- subicb_bph_ratio |> 
+  left_join(bph_activity_icb_drugs_mid)
+
+
+tm_shape(subicb_bph_ratio_drugs_mid) +
+  tm_fill("presc_anr",title="Activity/Need Ratio BPH",style = "pretty", palette = "-viridis") +
+  tm_borders("grey25", alpha=.5) +
+  tm_shape(ppi_providers_sf) + 
+  tm_dots(col = "short_role",size = 0.05, title = "Providers")+
+  tm_basemap(server = c('OpenStreetMap'))
 ```
 
 Overactive Bladder
@@ -937,11 +959,75 @@ oab_activity_icb_drugs_mid |>
     items_total = md("Items"),
     presc_anr = md("Activity to Need Ratio")
   ) |>
+  fmt_number(columns = 7:7,
+             decimals=2) |>
     tab_header(
     title = 'Prescription Items Activity To Need Ratio by Sub_ICB'
   ) |>
   tab_source_note(source_note = "Source: OpenPrescribing.net, Bennett Institute for Applied Data Science, University of Oxford, 2023")
 ```
+
+```{r}
+#| echo: false
+
+#subicb_oab_ratio <- readRDS("subicb_oab_ratio.rds")
+#oab_providers_sf <- readRDS("oab_providers_sf.rds")
+
+subicb_oab_ratio_drugs_mid <- subicb_oab_ratio |> 
+  left_join(oab_activity_icb_drugs_mid)
+
+
+tm_shape(subicb_oab_ratio_drugs_mid) +
+  tm_fill("presc_anr",title="Activity/Need Ratio OAB",style = "pretty", palette = "-viridis") +
+  tm_borders("grey25", alpha=.5) +
+  tm_shape(ppi_providers_sf) + 
+  tm_dots(col = "short_role",size = 0.05, title = "Providers")+
+  tm_basemap(server = c('OpenStreetMap'))
+
+```
+
+Post Prostatectomy Incontinence
+
+```{r}
+ppi_activity_icb_drugs_mid |>
+  gt() |> 
+  cols_hide(activityneedratio) |>
+  cols_label(
+    sub_icb_location_code = md("Sub-ICB"),
+    ppiprevnumtotal = md("Prevalence"),
+  #  list_size_ppi = md("List Size"),
+    num_ppi_spells_sum = md("Spells"),
+    items_total = md("Items"),
+    presc_anr = md("Activity to Need Ratio")
+  ) |>
+  fmt_number(columns = 6:6,
+             decimals=2) |>
+    tab_header(
+    title = 'Prescription Items Activity To Need Ratio by Sub_ICB'
+  ) |>
+  tab_source_note(source_note = "Source: OpenPrescribing.net, Bennett Institute for Applied Data Science, University of Oxford, 2023")
+```
+
+```{r}
+#| echo: false
+
+#subicb_ppi_ratio <- readRDS("subicb_ppi_ratio.rds")
+#ppi_providers_sf <- readRDS("ppi_providers_sf.rds")
+
+subicb_ppi_ratio_drugs_mid <- subicb_ppi_ratio |> 
+  left_join(ppi_activity_icb_drugs_mid)
+
+
+tm_shape(subicb_ppi_ratio_drugs_mid) +
+  tm_fill("presc_anr",title="Activity/Need Ratio PPI",style = "pretty", palette = "-viridis") +
+  tm_borders("grey25", alpha=.5) +
+  tm_shape(ppi_providers_sf) + 
+  tm_dots(col = "short_role",size = 0.05, title = "Providers")+
+  tm_basemap(server = c('OpenStreetMap'))
+
+```
+
+?Possibly add a prescribing map of activity to need ratio?
 
 ## Conclusion
 
@@ -1104,12 +1190,12 @@ OPCS codes: M61, M65, M662, M683
 
 Medications:
 
-Oxybutynin
+Oxybutynin (0704020J0)
 
-Tolterodine
+Tolterodine (0704020N0)
 
-Solifenacin
+Solifenacin (0704020AB)
 
-Mirabegron
+Mirabegron (0704020AE)
 
-Duloxetine
+Duloxetine (0704020AA)

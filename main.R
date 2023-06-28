@@ -1,6 +1,8 @@
 
 source("functions.R")
 
+source("R/functions.R")
+
 
 # Calculate the need
 source("calculate_need.R")
@@ -23,14 +25,14 @@ source("ratio_map.R")
 
 source("calculate_activity_gap.R")
 
+source("prescribing_data.R")
+
+bph_drug_data_all <- readRDS("bph_drug_data_all.rds")
+oab_drug_data_all <- readRDS("oab_drug_data_all.rds")
+ppi_drug_data_all <- readRDS("ppi_drug_data_all.rds")
 
 save.image(file = "data/projectimage.RData")
 
 source("outpatients.R")
 #Sources: Strategy Unit analysis; SUS+, National Commisioning Data Repository 
 
-
-list_size_age_group_compare_23all
-
-
-View(bph_activity_gp)

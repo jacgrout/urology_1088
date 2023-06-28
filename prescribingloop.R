@@ -1,3 +1,5 @@
+#Script uses the api to get the drug data at GP level and loops
+
 get_drugs_by_gp <- function(id, gp) {
   req <- httr::GET(
     "https://openprescribing.net/",
@@ -50,7 +52,13 @@ oab_drug_codes <- c(
   "0605020E0"
 )
 
-
+ppi_drug_codes <- c(
+  "0704020J0",
+  "0704020N0",
+  "0704020AB",
+  "0704020AE",
+  "0704020AA"
+)
 
 
 
@@ -60,14 +68,14 @@ f <- purrr::slowly(
 )
 
 # I'm going to fake this
-#mid_gps_codes <- midlands_gps$org_code
+mid_gps_codes <- midlands_gps$org_code
 #mid_gps_codes <-midlands_gps$org_code[1:2]
 
 drug_data_all <- tibble() 
 
-i=1201
+i=1
 for(i in 1201:1287){
-drug_data <- oab_drug_codes |>
+drug_data <- ppi_drug_codes |>
   purrr::set_names() |>
   # I suspect your error was forgetting to pass in the GP's to f
   purrr::map(f, mid_gps_codes[i]) |>
@@ -80,4 +88,16 @@ drug_data_all <- drug_data_all |>
 i=i+1
 }
 
-saveRDS(drug_data_all,"oab_drug_data_all.rds")
+saveRDS(drug_data_all,"ppi_drug_data_all.rds")
+
+
+
+oab_drugs_summary <- drug_data_all |>
+  group_by(row_id)|>
+  summarise(items_total = sum(items)) |>
+  ungroup()
+
+oab_activity_drugs <- oab_gp |> 
+  left_join(oab_drugs_summary,by = join_by(org_code==row_id)) |>
+  mutate(presc_anr = items_total/oabprevnumtotal)
+

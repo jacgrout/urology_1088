@@ -29,6 +29,9 @@ bph_drug_codes = c("0604020C0","0704010U0","0704010V0","0704010W0","0704010A0")
 oab_drug_codes = c("0704020AA","0704020AB","0704020J0","0704040G0","0704020N0","0704020AD","0704020AC","0704020AE","0605020E0")
 # 0704020AB and 0704020AE and 0704020J0 and 0704020N0 -  most used
 
+#PPI
+ppi_drug_codes <- c("0704020J0","0704020N0","0704020AB","0704020AE","0704020AA")
+
 #data_test <-get_drugs(drug_code)
 
 #call the function for each drug in the list but with a slight delay to avoid issues
@@ -55,20 +58,21 @@ drug_data <-drug_codes |>
 
 #create an empty tibble to put all the results in
 all_drugs <- tibble()
-
+i=1
 #loop over and bind together all the data retrieved for each drug in the list
 for(i in 1:nrow(drug_data)){
   df <- drug_data$results[[i]]
   all_drugs <- bind_rows(all_drugs,df)
+  i=i+1
 }
 
 
 #all_drugs <- all_drugs |> mutate(avcost = actual_cost/items)
 
-all_drugs_summary <- all_drugs |>
-  group_by(row_id,drug)|>
-  summarise(items_total = sum(items)) |>
-  ungroup()
+#all_drugs_summary <- all_drugs |>
+  # group_by(row_id,drug)|>
+  # summarise(items_total = sum(items)) |>
+  # ungroup()
 
 bph_drugs_summary <- all_drugs |>
   group_by(row_id)|>
@@ -121,3 +125,44 @@ oab_activity_icb_drugs_mid <- oab_activity_icb_drugs |>
   filter(sub_icb_location_code %in% midlands_sub_icbs)
 
 
+#----------------------------------------------------------------------------
+#PPI
+
+drug_codes <- ppi_drug_codes
+
+
+#format the results from the function call
+drug_data <-drug_codes |>
+  set_names() |>
+  purrr::map(f) |> #run up to here to check for errors, maybe remove the pipe
+  map("result") |>
+  discard(is.null) |>
+  enframe("id","results")
+
+#first_drug <-drug_data$results[[1]]
+
+#create an empty tibble to put all the results in
+all_drugs <- tibble()
+i=1
+#loop over and bind together all the data retrieved for each drug in the list
+for(i in 1:nrow(drug_data)){
+  df <- drug_data$results[[i]]
+  all_drugs <- bind_rows(all_drugs,df)
+  i=i+1
+}
+
+
+#all_drugs <- all_drugs |> mutate(avcost = actual_cost/items)
+
+
+ppi_drugs_summary <- all_drugs |>
+  group_by(row_id)|>
+  summarise(items_total = sum(items)) |>
+  ungroup()
+
+ppi_activity_icb_drugs <-ppi_activity_icb |> 
+  left_join(ppi_drugs_summary,by = join_by(sub_icb_location_code==row_id)) |>
+  mutate(presc_anr = items_total/ppiprevnumtotal)
+
+ppi_activity_icb_drugs_mid <- ppi_activity_icb_drugs |>
+  filter(sub_icb_location_code %in% midlands_sub_icbs)
