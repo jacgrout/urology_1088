@@ -8,3 +8,4 @@
 *.html
 report_files
 test_files
+/data/projectimage.RData
