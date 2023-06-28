@@ -30,6 +30,7 @@ source("prescribing_data.R")
 bph_drug_data_all <- readRDS("bph_drug_data_all.rds")
 oab_drug_data_all <- readRDS("oab_drug_data_all.rds")
 ppi_drug_data_all <- readRDS("ppi_drug_data_all.rds")
+midlandsoutpatients <- readRDS("midlandsoutpatients.rds")
 
 save.image(file = "data/projectimage.RData")
 

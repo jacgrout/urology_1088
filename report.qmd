@@ -35,7 +35,7 @@ Yet to be written ...
 
 ### Key Findings
 
-Yet to be written ...
+This project has identified that the underlying level of need in the Midlands varies between sub-ICBS and condititons. Prevalences for BPH are as low as 4.xx% in XXXX and
 
 ### Implications/Recommendations
 
@@ -1026,8 +1026,6 @@ tm_shape(subicb_ppi_ratio_drugs_mid) +
   tm_basemap(server = c('OpenStreetMap'))
 
 ```
-
-?Possibly add a prescribing map of activity to need ratio?
 
 ## Conclusion
 
