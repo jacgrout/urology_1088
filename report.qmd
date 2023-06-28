@@ -26,6 +26,7 @@ library(ggrepel)
 load(file = "data/projectimage.RData")
 source("R/functions.R")
 
+
 #midlandsoutpatients <- readRDS("midlandsoutpatients.rds")
 ```
 
