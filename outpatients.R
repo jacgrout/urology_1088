@@ -109,6 +109,8 @@ midlandsoutpatientsicb <-
 midlandsoutpatients |>
   group_by(icb22nm) |>
   summarise(totalProcs = sum(der_number_procedure),
-            totalattends = sum(numattends))|>
+            totalattends = sum(numattends))
+
+|>
   gt()
   

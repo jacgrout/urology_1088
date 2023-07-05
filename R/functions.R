@@ -1,41 +1,17 @@
+get_drugs <- function(id){
 
-
-get_drugs <- function(id) {
-  req <- httr::GET(
-    "https://openprescribing.net/",
-    path = c("api", "1.0", "spending_by_sicbl"),
-    query = list(
-      code = id,
-      format = "json"
-    )
-  )
-  
-  stopifnot(httr::status_code(req) == 200)
-  
-  req |>
-    httr::content() |>
-    dplyr::bind_rows()
+  req = GET(paste0("https://openprescribing.net/api/1.0/spending_by_sicbl/?code=",id,"&format=json"))
+  data = fromJSON(rawToChar(req$content)) |>
+    mutate(drug = id)
+  data
 }
 
-
-get_drugs_by_gp <- function(id, gp) {
-  req <- httr::GET(
-    "https://openprescribing.net/",
-    path = c("api", "1.0", "spending_by_practice"),
-    query = list(
-      code = id,
-      org = gp,
-      format = "json"
-    )
-  )
-  
-  stopifnot(httr::status_code(req) == 200)
-  
-  req |>
-    httr::content() |>
-    dplyr::bind_rows()
+get_drugs_by_gp <- function(id,gp){
+req = GET(paste0("https://openprescribing.net/api/1.0/spending_by_practice/?code=",id,"&org=",gp,"&format=json"))
+data = fromJSON(rawToChar(req$content)) |>
+  mutate(drug = id)
+data
 }
-
 
 
 
